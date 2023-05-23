@@ -25,7 +25,8 @@ app.use(routes);
 //Erro de validacoes
 app.use(errors());
 
-//Middleware para pegar errors sem ter que fica utilizando try catch nos código
+//Middleware para pegar errors sem ter que fica utilizando try catch nos código e pega os throw
+//AppError
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({
