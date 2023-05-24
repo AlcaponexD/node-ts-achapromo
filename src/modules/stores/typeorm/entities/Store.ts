@@ -1,6 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-enum publishedEnum {
+export enum publishedEnum {
   Option1 = '0',
   Option2 = '1',
 }
@@ -17,13 +23,23 @@ class Store {
   avatar: string;
 
   @Column()
+  url: string;
+
+  @Column()
   description: string;
 
   @Column({
     type: 'enum',
     enum: publishedEnum,
+    default: publishedEnum.Option1,
   })
   published: publishedEnum;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }
 
 export default Store;
