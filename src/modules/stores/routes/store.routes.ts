@@ -13,6 +13,8 @@ storeRouter.post(
     [Segments.BODY]: {
       title: Joi.string().required(),
       avatar: Joi.string().required(),
+      url: Joi.string().required(),
+      description: Joi.string(),
     },
   }),
   storeController.create,
