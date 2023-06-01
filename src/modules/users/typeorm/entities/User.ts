@@ -1,7 +1,10 @@
+import Product from '@modules/products/typeorm/entities/Product';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -28,6 +31,10 @@ class User {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @OneToMany(() => Product, product => product.user)
+  @JoinColumn()
+  products: Product[];
 }
 
 export default User;
