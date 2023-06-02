@@ -24,7 +24,6 @@ export default class CreateProductService {
     const storeRepository = getCustomRepository(StoreRepository);
     const parsedUrl = new URL(url);
     const domain = parsedUrl.hostname;
-    console.log(domain);
     const store = await storeRepository.findByUrl(domain);
     if (!store) {
       throw new AppError('Store not found');

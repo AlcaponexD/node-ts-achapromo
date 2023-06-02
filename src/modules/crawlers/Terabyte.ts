@@ -38,9 +38,12 @@ class Terabyte {
       const elementoValVista = element?.querySelector('#valVista');
       return elementoValVista?.textContent;
     }, elemento);
+
     let price;
     if (raw_price) {
+      console.log(raw_price);
       price = helpers.string_to_number(raw_price);
+      console.log(price);
     }
 
     const img_url = await page.evaluate(element => {
