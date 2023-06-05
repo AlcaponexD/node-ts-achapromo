@@ -1,5 +1,5 @@
-import Store from '@modules/stores/typeorm/entities/Store';
-import User from '@modules/users/typeorm/entities/User';
+import Store from '../../../stores/typeorm/entities/Store';
+import User from '../../../users/typeorm/entities/User';
 import {
   Column,
   CreateDateColumn,

@@ -1,4 +1,4 @@
-import Product from '@modules/products/typeorm/entities/Product';
+import Product from '../../../products/typeorm/entities/Product';
 import {
   Column,
   CreateDateColumn,
@@ -20,7 +20,7 @@ class User {
   @Column()
   email: string;
 
-  @Column({ select: false })
+  @Column({ select: true })
   password: string;
 
   @Column()

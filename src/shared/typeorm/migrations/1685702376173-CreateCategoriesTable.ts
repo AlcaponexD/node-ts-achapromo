@@ -27,7 +27,6 @@ export class CreateCategoriesTable1622717665356 implements MigrationInterface {
             name: 'published',
             type: 'enum',
             enum: ['0', '1'],
-            default: '0',
           },
           {
             name: 'avatar',
