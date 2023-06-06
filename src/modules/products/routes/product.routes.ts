@@ -17,6 +17,7 @@ productRouter.post(
       url: Joi.string().required(),
       avatar: Joi.string(),
       description: Joi.string(),
+      category: Joi.string(),
       store_id: Joi.string(),
     },
   }),

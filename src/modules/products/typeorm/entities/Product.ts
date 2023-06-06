@@ -1,3 +1,4 @@
+import { Category } from '@modules/categories/typeorm/entities/Category';
 import Store from '../../../stores/typeorm/entities/Store';
 import User from '../../../users/typeorm/entities/User';
 import {
@@ -50,6 +51,10 @@ class Product {
   @OneToOne(() => Store, store => store.products)
   @JoinColumn({ name: 'store_id' })
   store: Store;
+
+  @OneToOne(() => Category, category => category.products)
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
 
   @Column({
     type: 'enum',

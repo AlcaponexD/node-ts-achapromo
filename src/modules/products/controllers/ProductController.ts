@@ -5,7 +5,7 @@ import { getCustomRepository } from 'typeorm';
 
 export default class ProductControlller {
   public async create(request: Request, response: Response): Promise<Response> {
-    const { url } = request.body;
+    const body = request.body;
     const productService = new CreateProductService();
 
     const userService = getCustomRepository(UsersRepository);
@@ -16,10 +16,8 @@ export default class ProductControlller {
       },
     });
 
-    const product = await productService.execute({
-      url,
-      user: user,
-    });
+    body.user = user;
+    const product = await productService.execute(body);
 
     return response.json(product);
   }

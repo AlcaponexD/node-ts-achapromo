@@ -6,6 +6,10 @@ import User from '@modules/users/typeorm/entities/User';
 import StoreRepository from '@modules/stores/typeorm/repository/StoreRepository';
 import Store from '@modules/stores/typeorm/entities/Store';
 import Terabyte from '@modules/crawlers/Terabyte';
+import { Category } from '@modules/categories/typeorm/entities/Category';
+import CategoryRepository from '@modules/categories/repository/CategoryRepository';
+import { json } from 'stream/consumers';
+import helpers from '@modules/utils/helpers';
 
 interface IRequest {
   url: string;
@@ -15,11 +19,30 @@ interface IRequest {
   description?: string;
   user?: User;
   store?: Store;
+  category?: Category;
   published?: publishedEnum;
   in_review?: InReviewEnum;
+  category_name: string;
 }
 
 export default class CreateProductService {
+  private async getCategory(title: string): Promise<Category | undefined> {
+    const categoryRepository = getCustomRepository(CategoryRepository);
+    const category_exists = await categoryRepository.findByName(title);
+    if (category_exists) {
+      return category_exists;
+    }
+    const category = await categoryRepository.create({
+      title: title,
+      published: publishedEnum.Option2,
+      slug: helpers.slug(title),
+    });
+
+    categoryRepository.save(category);
+
+    return category;
+  }
+
   private async getStore(url: string): Promise<Store | undefined> {
     const storeRepository = getCustomRepository(StoreRepository);
     const parsedUrl = new URL(url);
@@ -67,12 +90,16 @@ export default class CreateProductService {
       !jsonFinal.title &&
       !jsonFinal.price &&
       !jsonFinal.avatar &&
-      !jsonFinal.price
+      !jsonFinal.price &&
+      !jsonFinal.category_name
     ) {
       throw new AppError('Send all inputs', 422);
     }
 
     jsonFinal.store = store;
+
+    //Get Category
+    jsonFinal.category = await this.getCategory(jsonFinal.category_name);
 
     const product = productRepository.create(jsonFinal);
     await productRepository.save(product);

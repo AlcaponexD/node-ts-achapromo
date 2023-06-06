@@ -1,7 +1,6 @@
 import path from 'path';
 import puppeteer from 'puppeteer';
 import uploadConfig from '@config/upload';
-import upload from '@config/upload';
 import helpers from '@modules/utils/helpers';
 class Terabyte {
   public async run(url: string) {
@@ -41,9 +40,7 @@ class Terabyte {
 
     let price;
     if (raw_price) {
-      console.log(raw_price);
       price = helpers.string_to_number(raw_price);
-      console.log(price);
     }
 
     const img_url = await page.evaluate(element => {
@@ -58,14 +55,14 @@ class Terabyte {
       avatar = await uploadConfig.uploadFromUrlImage(img_url);
     }
 
-    const category = await page.evaluate(() => {
+    const category_name = await page.evaluate(() => {
       let cats = undefined;
 
       const nodeList = document.querySelectorAll(
         '[itemprop="itemListElement"]',
       );
       nodeList.forEach((node, key) => {
-        if (key == 1) {
+        if (key == nodeList.length - 1) {
           const item =
             node.querySelector<HTMLElement>('[itemprop="item"]')?.innerText;
           cats = item;
@@ -81,7 +78,7 @@ class Terabyte {
       title,
       price,
       img_url,
-      category,
+      category_name,
       avatar,
     };
   }

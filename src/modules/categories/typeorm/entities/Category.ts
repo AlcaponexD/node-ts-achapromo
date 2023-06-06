@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import Product from '@modules/products/typeorm/entities/Product';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 export enum publishedEnum {
   Option1 = '0',
   Option2 = '1',
@@ -23,4 +30,8 @@ export class Category {
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   slug: string;
+
+  @OneToMany(() => Product, product => product.store)
+  @JoinColumn()
+  products: Product[];
 }
