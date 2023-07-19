@@ -12,7 +12,12 @@ interface IRequest {
 }
 
 interface IResponse {
-  user: User;
+  user: {
+    name: string;
+    email: string;
+    avatar: string;
+    id: string;
+  };
   token: string;
 }
 
@@ -37,7 +42,14 @@ class CreateSessionService {
     });
 
     return {
-      user,
+      user: {
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar
+          ? process.env.URL_APP + '/files/' + user.avatar
+          : '',
+        id: user.id,
+      },
       token,
     };
   }
