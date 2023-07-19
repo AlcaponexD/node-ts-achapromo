@@ -42,6 +42,9 @@ class Product {
   description: string;
 
   @Column()
+  store_id: string;
+
+  @Column()
   classification: number;
 
   @OneToOne(() => User, { primary: true, cascade: true })

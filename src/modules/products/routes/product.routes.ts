@@ -24,4 +24,6 @@ productRouter.post(
   productController.create,
 );
 
+productRouter.get('/recommends', productController.listRecommends);
+
 export default productRouter;
