@@ -1,8 +1,8 @@
 import { Segments, celebrate } from 'celebrate';
 import { Router } from 'express';
 import Joi from 'joi';
-import isAuthenticated from '@shared/http/middlewares/isAuthenticated';
 import CategoryController from '../controllers/CategoryController';
+import isAuthenticated from '../../../shared/http/middlewares/isAuthenticated';
 
 const categoryController = new CategoryController();
 

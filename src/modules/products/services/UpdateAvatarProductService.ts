@@ -1,10 +1,10 @@
 import { getCustomRepository } from 'typeorm';
 import Product from '../typeorm/entities/Product';
 import ProductRepository from '../typeorm/repository/ProductRepository';
-import AppError from '@shared/errors/AppError';
 import path from 'path';
-import uploadConfig from '@config/upload';
+import uploadConfig from '../../../config/upload';
 import fs from 'fs';
+import AppError from '../../../shared/errors/AppError';
 
 interface IRequest {
   product_url: string;

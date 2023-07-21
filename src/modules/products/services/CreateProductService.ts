@@ -1,15 +1,14 @@
 import { getCustomRepository } from 'typeorm';
 import { InReviewEnum, publishedEnum } from '../typeorm/entities/Product';
 import ProductRepository from '../typeorm/repository/ProductRepository';
-import AppError from '@shared/errors/AppError';
-import User from '@modules/users/typeorm/entities/User';
-import StoreRepository from '@modules/stores/typeorm/repository/StoreRepository';
-import Store from '@modules/stores/typeorm/entities/Store';
-import Terabyte from '@modules/crawlers/Terabyte';
-import { Category } from '@modules/categories/typeorm/entities/Category';
-import CategoryRepository from '@modules/categories/repository/CategoryRepository';
-import { json } from 'stream/consumers';
-import helpers from '@modules/utils/helpers';
+import User from '../../../modules/users/typeorm/entities/User';
+import Store from '../../../modules/stores/typeorm/entities/Store';
+import { Category } from '../../../modules/categories/typeorm/entities/Category';
+import CategoryRepository from '../../../modules/categories/repository/CategoryRepository';
+import helpers from '../../../modules/utils/helpers';
+import StoreRepository from '../../../modules/stores/typeorm/repository/StoreRepository';
+import AppError from '../../../shared/errors/AppError';
+import Terabyte from '../../../modules/crawlers/Terabyte';
 
 interface IRequest {
   url: string;

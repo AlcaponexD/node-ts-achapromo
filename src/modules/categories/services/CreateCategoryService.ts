@@ -1,8 +1,8 @@
 import { getCustomRepository } from 'typeorm';
 import CategoryRepository from '../repository/CategoryRepository';
-import AppError from '@shared/errors/AppError';
-import helpers from '@modules/utils/helpers';
 import { publishedEnum } from '../typeorm/entities/Category';
+import helpers from '../../../modules/utils/helpers';
+import AppError from '../../../shared/errors/AppError';
 
 interface IRequest {
   title: string;

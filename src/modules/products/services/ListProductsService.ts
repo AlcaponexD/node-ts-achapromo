@@ -1,22 +1,29 @@
 import { getCustomRepository } from 'typeorm';
 import ProductRepository from '../typeorm/repository/ProductRepository';
-import AppError from '@shared/errors/AppError';
+import iProductRecommendResponse from '../interfaces/ProductRecommendResponse';
+import iShowProductResponse from '../interfaces/ShowProductResponse';
 
-interface IProductResponse {
-  title: string;
-  url: string;
-  avatar: string;
-  price: string;
-  description?: string;
-  classification?: string;
-  store: string;
-  user: string;
-  category: string;
-}
 export default class ListProductService {
-  public async recommends(): Promise<any> {
+  public async recommends(): Promise<iProductRecommendResponse[] | undefined> {
     const productRepository = getCustomRepository(ProductRepository);
-    const products = await productRepository.findRecommends();
+    const _products = await productRepository.findRecommends();
+    const products = _products?.map(product => {
+      if (product.avatar) {
+        product.avatar = process.env.URL_APP + '/files/' + product.avatar;
+      }
+      return product;
+    });
     return products;
+  }
+
+  public async productById(
+    id: string,
+  ): Promise<iShowProductResponse | undefined> {
+    const productRepository = getCustomRepository(ProductRepository);
+    const product = await productRepository.findProductById(id);
+    if (product) {
+      product.avatar = process.env.URL_APP + '/files/' + product.avatar;
+    }
+    return product;
   }
 }

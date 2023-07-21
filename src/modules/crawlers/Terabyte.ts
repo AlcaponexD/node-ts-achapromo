@@ -1,7 +1,7 @@
 import path from 'path';
 import puppeteer from 'puppeteer';
-import uploadConfig from '@config/upload';
-import helpers from '@modules/utils/helpers';
+import uploadConfig from '../../config/upload';
+import helpers from '../utils/helpers';
 class Terabyte {
   public async run(url: string) {
     //Abre o navegador
@@ -43,8 +43,8 @@ class Terabyte {
       price = helpers.string_to_number(raw_price);
     }
 
-    const img_url = await page.evaluate(element => {
-      const elementoValVista = element?.querySelector<HTMLImageElement>(
+    const img_url = await page.evaluate((element: any) => {
+      const elementoValVista = element?.querySelector(
         '.fotorama__thumb.fotorama__loaded.fotorama__loaded--img > img',
       );
       return elementoValVista?.src;
@@ -61,10 +61,9 @@ class Terabyte {
       const nodeList = document.querySelectorAll(
         '[itemprop="itemListElement"]',
       );
-      nodeList.forEach((node, key) => {
+      nodeList.forEach((node: any, key: any) => {
         if (key == nodeList.length - 1) {
-          const item =
-            node.querySelector<HTMLElement>('[itemprop="item"]')?.innerText;
+          const item = node.querySelector('[itemprop="item"]')?.innerText;
           cats = item;
         }
       });

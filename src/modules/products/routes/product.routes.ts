@@ -1,8 +1,8 @@
 import { Segments, celebrate } from 'celebrate';
 import { Router } from 'express';
 import Joi from 'joi';
-import ProductControlller from '@modules/products/controllers/ProductController';
-import isAuthenticated from '@shared/http/middlewares/isAuthenticated';
+import isAuthenticated from '../../../shared/http/middlewares/isAuthenticated';
+import ProductControlller from '../controllers/ProductController';
 
 const productController = new ProductControlller();
 const productRouter = Router();
@@ -25,5 +25,6 @@ productRouter.post(
 );
 
 productRouter.get('/recommends', productController.listRecommends);
+productRouter.get('/:id', productController.showProduct);
 
 export default productRouter;

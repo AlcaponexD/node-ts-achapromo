@@ -1,4 +1,4 @@
-import { Category } from '@modules/categories/typeorm/entities/Category';
+import { Category } from '../../../categories/typeorm/entities/Category';
 import Store from '../../../stores/typeorm/entities/Store';
 import User from '../../../users/typeorm/entities/User';
 import {

@@ -1,4 +1,4 @@
-import AppError from '@shared/errors/AppError';
+import AppError from '../../../shared/errors/AppError';
 import Store, { publishedEnum } from '../typeorm/entities/Store';
 import StoreRepository from '../typeorm/repository/StoreRepository';
 import { getCustomRepository } from 'typeorm';
