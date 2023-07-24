@@ -8,6 +8,7 @@ class Terabyte {
     const browser = await puppeteer.launch({
       headless: 'new',
       //executablePath: '/usr/bin/chromium-browser',
+      args: ['--no-sandbox'],
     });
 
     //Nova guia
