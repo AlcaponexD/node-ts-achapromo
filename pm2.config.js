@@ -6,7 +6,6 @@ module.exports = {
       user: 'ubuntu',
       watch: true,
       max_memory_restart: '24G',
-      //Agora vai
-    },
+      //Agora vai 2
   ],
 };
