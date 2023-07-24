@@ -18,9 +18,9 @@ class Terabyte {
     await page.setExtraHTTPHeaders({
       'Accept-Language': 'en',
     });
-    await page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
-    );
+    // await page.setUserAgent(
+    //   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+    // );
 
     await page.goto(url);
     await page.setViewport({ width: 1080, height: 1024 });
