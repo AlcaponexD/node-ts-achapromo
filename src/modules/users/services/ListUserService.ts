@@ -10,6 +10,14 @@ class ListUserService {
 
     return users;
   }
+
+  public async findUserLogged(id: string): Promise<User | undefined> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const users = usersRepository.findById(id);
+
+    return users;
+  }
 }
 
 export default ListUserService;
