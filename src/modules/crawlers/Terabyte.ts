@@ -5,7 +5,7 @@ import helpers from '../utils/helpers';
 class Terabyte {
   public async run(url: string) {
     //Abre o navegador
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: 'new' });
 
     //Nova guia
     const page = await browser.newPage();
@@ -44,12 +44,13 @@ class Terabyte {
     }
 
     const img_url = await page.evaluate((element: any) => {
-      const elementoValVista = element?.querySelector(
-        '.fotorama__thumb.fotorama__loaded.fotorama__loaded--img > img',
-      );
-      return elementoValVista?.src;
+      const elementoValVista = element.querySelector(
+        '[data-caption="imagem produto"]',
+      ).src;
+      return elementoValVista;
     }, elemento);
 
+    console.log(img_url);
     let avatar;
     if (img_url) {
       avatar = await uploadConfig.uploadFromUrlImage(img_url);
