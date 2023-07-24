@@ -7,7 +7,7 @@ class Terabyte {
     //Abre o navegador
     const browser = await puppeteer.launch({
       headless: 'new',
-      executablePath: '/usr/bin/chromium-browser',
+      executablePath: '/snap/bin/chromium',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
