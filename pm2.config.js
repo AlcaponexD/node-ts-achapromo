@@ -6,7 +6,6 @@ module.exports = {
       user: 'ubuntu',
       watch: true,
       max_memory_restart: '24G',
-      // Outras configurações do PM2, se houver
     },
   ],
 };
