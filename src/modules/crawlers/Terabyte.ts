@@ -5,7 +5,10 @@ import helpers from '../utils/helpers';
 class Terabyte {
   public async run(url: string) {
     //Abre o navegador
-    const browser = await puppeteer.launch({ headless: 'new' });
+    const browser = await puppeteer.launch({
+      headless: 'new',
+      executablePath: '/usr/bin/chromium-browser',
+    });
 
     //Nova guia
     const page = await browser.newPage();
