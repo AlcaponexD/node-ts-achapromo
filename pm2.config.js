@@ -4,6 +4,8 @@ module.exports = {
       name: 'AchaPromoAPI',
       script: 'dist/shared/http/server.js',
       user: 'ubuntu',
+      watch: true,
+      max_memory_restart: '24G',
       // Outras configurações do PM2, se houver
     },
   ],
