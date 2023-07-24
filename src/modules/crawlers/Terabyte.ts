@@ -6,7 +6,7 @@ class Terabyte {
   public async run(url: string) {
     //Abre o navegador
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: 'new',
       executablePath: '/usr/bin/chromium-browser',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });

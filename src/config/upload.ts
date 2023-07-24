@@ -20,7 +20,11 @@ export default {
   directory: uploadFolder,
   storage: uploadMulterStorage,
   uploadFromUrlImage: async (url: string) => {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      headless: 'new',
+      executablePath: '/usr/bin/chromium-browser',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
     const page = await browser.newPage();
     //Bypass checking browser cloudflare
     await page.setExtraHTTPHeaders({
