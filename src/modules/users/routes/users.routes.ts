@@ -35,4 +35,17 @@ usersRouter.patch(
   usersAvatarController.update,
 );
 
+usersRouter.put(
+  '/',
+  isAuthenticated,
+  celebrate({
+    [Segments.BODY]: {
+      name: Joi.string().required(),
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
+    },
+  }),
+  usersController.update,
+);
+
 export default usersRouter;

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import CreateUserService from '../services/CreateUserService';
 import ListUserService from '../services/ListUserService';
 import AppError from '@shared/errors/AppError';
+import UpdateUserService from '../services/UpdateUserService';
 
 export default class UserController {
   public async index(request: Request, response: Response): Promise<Response> {
@@ -59,6 +60,19 @@ export default class UserController {
       name,
       email,
       password,
+    });
+
+    return response.json(user);
+  }
+
+  public async update(request: Request, response: Response): Promise<Response> {
+    const listUser = new UpdateUserService();
+
+    const user = await listUser.execute({
+      user_id: request.user.id,
+      name: request.body.name,
+      email: request.body.email,
+      password: request.body.password,
     });
 
     return response.json(user);
