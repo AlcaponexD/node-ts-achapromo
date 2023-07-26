@@ -20,12 +20,19 @@ class UpdateUserAvatarService {
       throw new AppError('User not found', 404);
     }
     if (user.avatar) {
-      const UserAvatarFilePath = path.join(uploadConfig.directory, user.avatar);
-      const userAvatarFileExists = await fs.promises.stat(UserAvatarFilePath);
+      try {
+        const UserAvatarFilePath = path.join(
+          uploadConfig.directory,
+          user.avatar,
+        );
+        const userAvatarFileExists = await fs.promises.stat(UserAvatarFilePath);
 
-      if (userAvatarFileExists) {
-        //Remove arquivo duplicado, caso existir
-        await fs.promises.unlink(UserAvatarFilePath);
+        if (userAvatarFileExists) {
+          //Remove arquivo duplicado, caso existir
+          await fs.promises.unlink(UserAvatarFilePath);
+        }
+      } catch (error: any) {
+        console.log(error.message);
       }
     }
     user.avatar = avatarFileName;

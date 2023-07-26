@@ -54,7 +54,6 @@ class Terabyte {
       return elementoValVista;
     }, elemento);
 
-    console.log(img_url);
     let avatar;
     if (img_url) {
       avatar = await uploadConfig.uploadFromUrlImage(img_url);
@@ -75,11 +74,9 @@ class Terabyte {
 
       return cats;
     }, elemento);
-    console.log('Testaeeeee');
 
     await browser.close();
 
-    console.log('Closeou');
     return {
       title,
       price,
