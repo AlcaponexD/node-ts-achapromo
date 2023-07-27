@@ -3,13 +3,8 @@ import User from '../typeorm/entities/User';
 import UsersRepository from '../typeorm/repositories/UsersRepository';
 import AppError from '../../../shared/errors/AppError';
 import { hash } from 'bcryptjs';
+import UserUpdateInterface from '../interfaces/UserUpdateInterface';
 
-interface IRequest {
-  user_id: string;
-  name: string;
-  email: string;
-  password: string;
-}
 interface IResponse {
   name: string;
   email: string;
@@ -22,7 +17,7 @@ class UpdateUserService {
     name,
     email,
     password,
-  }: IRequest): Promise<IResponse> {
+  }: UserUpdateInterface): Promise<IResponse> {
     const usersRepository = getCustomRepository(UsersRepository);
     const user = await usersRepository.findById(user_id);
 
@@ -30,11 +25,13 @@ class UpdateUserService {
       throw new AppError('User not found', 404);
     }
 
-    const hashedPassword = await hash(password, 8);
+    if (password) {
+      const hashedPassword = await hash(password, 8);
+      password ? (user.password = hashedPassword) : null;
+    }
 
     name ? (user.name = name) : null;
     email ? (user.email = email) : null;
-    password ? (user.password = hashedPassword) : null;
     await usersRepository.save(user);
 
     return {

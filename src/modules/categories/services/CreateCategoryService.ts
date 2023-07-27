@@ -16,7 +16,7 @@ class CreateCategoryService {
     const categoryRepository = getCustomRepository(CategoryRepository);
     const category_exists = await categoryRepository.findByName(data.title);
     if (category_exists) {
-      throw new AppError('Category not exists', 404);
+      throw new AppError('Category exists', 422);
     }
 
     data.slug = helpers.slug(data.title);

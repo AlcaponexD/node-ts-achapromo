@@ -3,7 +3,13 @@ import CreateUserService from '../services/CreateUserService';
 import ListUserService from '../services/ListUserService';
 import AppError from '@shared/errors/AppError';
 import UpdateUserService from '../services/UpdateUserService';
-
+import UserUpdateInterface from '../interfaces/UserUpdateInterface';
+interface IRequest {
+  user_id: string;
+  name: string;
+  email: string;
+  password?: string;
+}
 export default class UserController {
   public async index(request: Request, response: Response): Promise<Response> {
     const listUser = new ListUserService();
@@ -68,12 +74,17 @@ export default class UserController {
   public async update(request: Request, response: Response): Promise<Response> {
     const listUser = new UpdateUserService();
 
-    const user = await listUser.execute({
+    const data_user: UserUpdateInterface = {
       user_id: request.user.id,
       name: request.body.name,
       email: request.body.email,
-      password: request.body.password,
-    });
+    };
+
+    if (request.body.password) {
+      data_user.password = request.body.password;
+    }
+
+    const user = await listUser.execute(data_user);
 
     return response.json(user);
   }
