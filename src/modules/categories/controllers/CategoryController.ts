@@ -14,6 +14,11 @@ class CategoryController {
     const categories = await categorysService.list();
     return response.json(categories);
   }
+  public async show(request: Request, response: Response): Promise<Response> {
+    const categorysService = new ListCategoryService();
+    const products = await categorysService.show(request.params.id);
+    return response.json(products);
+  }
 }
 
 export default CategoryController;

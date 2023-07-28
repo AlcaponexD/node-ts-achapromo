@@ -9,6 +9,7 @@ const categoryController = new CategoryController();
 const categoryRouter = Router();
 
 categoryRouter.get('/', categoryController.list);
+categoryRouter.get('/:id', categoryController.show);
 
 categoryRouter.post(
   '/',
