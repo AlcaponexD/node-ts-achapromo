@@ -48,13 +48,16 @@ export default class CreateProductService {
     const domain = parsedUrl.hostname;
     const store = await storeRepository.findByUrl(domain);
     if (!store) {
-      throw new AppError('Store not found');
+      throw new AppError('Loja não encontrada');
     }
 
     return store;
   }
 
-  public async processProduct(store: string, url: string): Promise<object> {
+  public async processProduct(
+    store: string,
+    url: string,
+  ): Promise<object | boolean> {
     //mock
     const storeList: Record<string, any> = {
       terabyte: async (url: string) => {
@@ -63,14 +66,18 @@ export default class CreateProductService {
       },
     };
 
-    return await storeList[store](url);
+    try {
+      return await storeList[store](url);
+    } catch (e) {
+      return false;
+    }
   }
 
   public async execute(data: IRequest): Promise<any> {
     const productRepository = getCustomRepository(ProductRepository);
     const productExists = await productRepository.findByUrl(data.url);
     if (productExists) {
-      throw new AppError('Product exists with the url');
+      throw new AppError('Produto já existente');
     }
 
     data.published = publishedEnum.Option1;
@@ -82,7 +89,7 @@ export default class CreateProductService {
     const jsonFinal = Object.assign({}, data, dataProductCrawler);
     const store = await this.getStore(data.url);
     if (!store) {
-      throw new AppError('Store not found', 404);
+      throw new AppError('Loja não encontrada', 404);
     }
 
     if (
@@ -92,7 +99,7 @@ export default class CreateProductService {
       !jsonFinal.price &&
       !jsonFinal.category_name
     ) {
-      throw new AppError('Send all inputs', 422);
+      throw new AppError('Preencha manualmente o novo produto', 422);
     }
 
     jsonFinal.store = store;
