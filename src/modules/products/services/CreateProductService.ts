@@ -9,6 +9,7 @@ import helpers from '../../../modules/utils/helpers';
 import StoreRepository from '../../../modules/stores/typeorm/repository/StoreRepository';
 import AppError from '../../../shared/errors/AppError';
 import Terabyte from '../../../modules/crawlers/Terabyte';
+import { json } from 'stream/consumers';
 
 interface IRequest {
   url: string;
@@ -42,6 +43,12 @@ export default class CreateProductService {
     return category;
   }
 
+  private storeName(url: string): string {
+    const parsedUrl = new URL(url);
+    const domain = parsedUrl.hostname;
+    return domain;
+  }
+
   private async getStore(url: string): Promise<Store | undefined> {
     const storeRepository = getCustomRepository(StoreRepository);
     const parsedUrl = new URL(url);
@@ -60,7 +67,7 @@ export default class CreateProductService {
   ): Promise<object | boolean> {
     //mock
     const storeList: Record<string, any> = {
-      terabyte: async (url: string) => {
+      terabyteshop: async (url: string) => {
         const terabyte = new Terabyte();
         return terabyte.run(url);
       },
@@ -83,20 +90,18 @@ export default class CreateProductService {
     data.published = publishedEnum.Option1;
     data.in_review = InReviewEnum.Option1;
 
-    //Mock pra loja
-    const dataProductCrawler = await this.processProduct('terabyte', data.url);
-
-    const jsonFinal = Object.assign({}, data, dataProductCrawler);
     const store = await this.getStore(data.url);
-    if (!store) {
+    const storeName = this.storeName(data.url);
+    if (!store || !storeName) {
       throw new AppError('Loja não encontrada', 404);
     }
-
+    //Mock pra loja
+    const dataProductCrawler = await this.processProduct(storeName, data.url);
+    const jsonFinal = Object.assign({}, data, dataProductCrawler);
     if (
       !jsonFinal.title &&
       !jsonFinal.price &&
       !jsonFinal.avatar &&
-      !jsonFinal.price &&
       !jsonFinal.category_name
     ) {
       throw new AppError('Preencha manualmente o novo produto', 422);
@@ -106,6 +111,8 @@ export default class CreateProductService {
 
     //Get Category
     jsonFinal.category = await this.getCategory(jsonFinal.category_name);
+
+    return jsonFinal;
 
     const product = productRepository.create(jsonFinal);
     await productRepository.save(product);
