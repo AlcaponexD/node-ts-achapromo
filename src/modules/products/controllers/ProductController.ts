@@ -3,6 +3,7 @@ import CreateProductService from '../services/CreateProductService';
 import { getCustomRepository } from 'typeorm';
 import ListProductService from '../services/ListProductsService';
 import UsersRepository from '../../users/typeorm/repositories/UsersRepository';
+import UpdateProductService from '../services/UpdateProductService';
 
 export default class ProductControlller {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -37,6 +38,29 @@ export default class ProductControlller {
   ): Promise<Response> {
     const productService = new ListProductService();
     const product = await productService.productById(request.params.id);
+    return response.json(product);
+  }
+
+  public async showMyProducts(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const productService = new ListProductService();
+
+    const product = await productService.productByUserLogged(request.user.id);
+    return response.json(product);
+  }
+
+  public async update(request: Request, response: Response): Promise<Response> {
+    const productService = new UpdateProductService();
+    const product = await productService.execute(
+      {
+        ...request.body,
+        ...{ avatar: request.file },
+      },
+      request.params.id,
+    );
+
     return response.json(product);
   }
 }

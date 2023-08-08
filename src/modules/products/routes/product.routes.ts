@@ -25,6 +25,25 @@ productRouter.post(
 );
 
 productRouter.get('/recommends', productController.listRecommends);
+productRouter.get(
+  '/show/me',
+  isAuthenticated,
+  productController.showMyProducts,
+);
 productRouter.get('/:id', productController.showProduct);
+productRouter.put(
+  '/:id',
+  isAuthenticated,
+  celebrate({
+    [Segments.BODY]: {
+      title: Joi.string(),
+      price: Joi.number(),
+      avatar: Joi.any(),
+      description: Joi.string(),
+      category_name: Joi.string(),
+    },
+  }),
+  productController.update,
+);
 
 export default productRouter;

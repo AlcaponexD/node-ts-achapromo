@@ -26,4 +26,12 @@ export default class ListProductService {
     }
     return product;
   }
+  public async productByUserLogged(id: string): Promise<any[] | undefined> {
+    const productRepository = getCustomRepository(ProductRepository);
+    const products = await productRepository.findMyProductsSended(id);
+    // products?.map(product => {
+    //   product.avatar = process.env.URL_APP + '/files/' + product.avatar;
+    // });
+    return products;
+  }
 }

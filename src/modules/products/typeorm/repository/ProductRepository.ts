@@ -2,6 +2,7 @@ import { EntityRepository, Repository, getRepository } from 'typeorm';
 import Product from '../entities/Product';
 import iProductRecommendResponse from '../../interfaces/ProductRecommendResponse';
 import iShowProductResponse from '../../interfaces/ShowProductResponse';
+import IMyProductsResponse from '@modules/products/interfaces/MyProductsResponse';
 
 @EntityRepository(Product)
 class ProductRepository extends Repository<Product> {
@@ -47,6 +48,42 @@ class ProductRepository extends Repository<Product> {
       .getMany();
     return products;
   }
+  public async findMyProductsSended(
+    user_id: string,
+  ): Promise<IMyProductsResponse[] | undefined> {
+    const products = await getRepository(Product)
+      .createQueryBuilder('product')
+      .select([
+        'product.id',
+        'product.title',
+        'product.url',
+        'product.avatar',
+        'product.price',
+        'product.user_id',
+        'product.description',
+        'product.classification',
+        'product.created_at',
+        'product.published',
+        'product.in_review',
+      ])
+      .leftJoin('product.store', 'store')
+      .innerJoin('product.user', 'user')
+      .leftJoin('product.category', 'category')
+      .addSelect([
+        'store.id',
+        'store.title',
+        'user.id',
+        'user.name',
+        'category.id',
+        'category.title',
+      ])
+      .where({
+        user: user_id,
+      })
+      .getMany();
+    return products;
+  }
+
   public async findProductById(
     id: string,
   ): Promise<iShowProductResponse | undefined> {
