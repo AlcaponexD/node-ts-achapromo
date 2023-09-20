@@ -6,19 +6,42 @@ import sharp from 'sharp';
 import puppeteer from 'puppeteer';
 
 const uploadFolder = path.resolve(__dirname, '..', '..', 'uploads');
-const uploadMulterStorage = multer.diskStorage({
-  destination: uploadFolder,
-  filename(request, file, callback) {
-    const fileHash = cryto.randomBytes(10).toString('hex');
-    const fileName = `${fileHash}-${file.originalname}`;
+const uploadFolderProduct = path.resolve(
+  __dirname,
+  '..',
+  '..',
+  'uploads/products',
+);
 
-    callback(null, fileName);
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    const dt = new Date();
+    const fullFileName = `${dt.getTime()} ${path.extname(file.originalname)}`;
+    cb(null, fullFileName);
+  },
+});
+
+const product_storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/products/');
+  },
+  filename: function (req, file, cb) {
+    const dt = new Date();
+    const fullFileName = `product-${dt.getTime()}${path.extname(
+      file.originalname,
+    )}`;
+    cb(null, fullFileName);
   },
 });
 
 export default {
   directory: uploadFolder,
-  storage: uploadMulterStorage,
+  directoryProduct: uploadFolderProduct,
+  storage: multer({ storage }),
+  product_storage: multer({ storage: product_storage }),
   uploadFromUrlImage: async (url: string) => {
     const browser = await puppeteer.launch({
       // headless: 'new',

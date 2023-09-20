@@ -3,6 +3,7 @@ import { Router } from 'express';
 import Joi from 'joi';
 import isAuthenticated from '../../../shared/http/middlewares/isAuthenticated';
 import ProductControlller from '../controllers/ProductController';
+import upload from '@config/upload';
 
 const productController = new ProductControlller();
 const productRouter = Router();
@@ -38,12 +39,18 @@ productRouter.put(
     [Segments.BODY]: {
       title: Joi.string(),
       price: Joi.number(),
-      avatar: Joi.any(),
       description: Joi.string(),
       category_name: Joi.string(),
     },
   }),
   productController.update,
+);
+
+productRouter.patch(
+  '/avatar/:id',
+  isAuthenticated,
+  upload.product_storage.single('avatar'),
+  productController.updateAvatar,
 );
 
 export default productRouter;

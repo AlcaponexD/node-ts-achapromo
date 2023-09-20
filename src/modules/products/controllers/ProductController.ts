@@ -4,6 +4,7 @@ import { getCustomRepository } from 'typeorm';
 import ListProductService from '../services/ListProductsService';
 import UsersRepository from '../../users/typeorm/repositories/UsersRepository';
 import UpdateProductService from '../services/UpdateProductService';
+import UpdateAvatarProductServce from '../services/UpdateAvatarProductService';
 
 export default class ProductControlller {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -54,12 +55,22 @@ export default class ProductControlller {
   public async update(request: Request, response: Response): Promise<Response> {
     const productService = new UpdateProductService();
     const product = await productService.execute(
-      {
-        ...request.body,
-        ...{ avatar: request.file },
-      },
+      request.body,
       request.params.id,
     );
+
+    return response.json(product);
+  }
+
+  public async updateAvatar(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const updateAvatar = new UpdateAvatarProductServce();
+    const product = await updateAvatar.execute({
+      id: request.params.id,
+      avatarFileName: request.file?.filename as string,
+    });
 
     return response.json(product);
   }

@@ -5,36 +5,40 @@ import path from 'path';
 import uploadConfig from '../../../config/upload';
 import fs from 'fs';
 import AppError from '../../../shared/errors/AppError';
+import iShowProductResponse from '../interfaces/ShowProductResponse';
 
 interface IRequest {
-  product_url: string;
+  id: string;
   avatarFileName: string;
 }
 
 class UpdateAvatarProductServce {
   public async execute({
-    product_url,
+    id,
     avatarFileName,
-  }: IRequest): Promise<Product> {
+  }: IRequest): Promise<iShowProductResponse> {
     const productRepository = getCustomRepository(ProductRepository);
-    const product = await productRepository.findByUrl(product_url);
+    const product = await productRepository.findProductById(id);
     if (!product) {
       throw new AppError('Product not found', 404);
     }
-
     if (product.avatar) {
       //Junta o diretorio com o nome salvo no banco
       const ProductAvatarFilePath = path.join(
-        uploadConfig.directory,
+        uploadConfig.directoryProduct,
         product.avatar,
       );
-      const productAvatarFileExists = await fs.promises.stat(
-        ProductAvatarFilePath,
-      );
+      try {
+        const productAvatarFileExists = await fs.promises.stat(
+          ProductAvatarFilePath,
+        );
 
-      if (productAvatarFileExists) {
-        //Remove arquivo duplicado, caso existir
-        await fs.promises.unlink(ProductAvatarFilePath);
+        if (productAvatarFileExists) {
+          //Remove arquivo duplicado, caso existir
+          await fs.promises.unlink(ProductAvatarFilePath);
+        }
+      } catch (error) {
+        console.log(error);
       }
 
       product.avatar = avatarFileName;

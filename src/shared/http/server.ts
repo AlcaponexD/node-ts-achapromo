@@ -15,7 +15,7 @@ const app = express();
 // Put these statements before you define any routes.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(multer().single('avatar'));
+//app.use(multer().single('avatar'));
 //Habilita cors para requisicões, sem passar parametro ele é * aceita todas origens
 app.use(cors());
 
