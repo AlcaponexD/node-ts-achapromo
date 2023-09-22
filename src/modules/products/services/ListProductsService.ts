@@ -9,7 +9,8 @@ export default class ListProductService {
     const _products = await productRepository.findRecommends();
     const products = _products?.map(product => {
       if (product.avatar) {
-        product.avatar = process.env.URL_APP + '/files/' + product.avatar;
+        product.avatar =
+          process.env.URL_APP + '/files/products/' + product.avatar;
       }
       return product;
     });
@@ -22,16 +23,18 @@ export default class ListProductService {
     const productRepository = getCustomRepository(ProductRepository);
     const product = await productRepository.findProductById(id);
     if (product) {
-      product.avatar = process.env.URL_APP + '/files/' + product.avatar;
+      product.avatar =
+        process.env.URL_APP + '/files/products/' + product.avatar;
     }
     return product;
   }
   public async productByUserLogged(id: string): Promise<any[] | undefined> {
     const productRepository = getCustomRepository(ProductRepository);
     const products = await productRepository.findMyProductsSended(id);
-    // products?.map(product => {
-    //   product.avatar = process.env.URL_APP + '/files/' + product.avatar;
-    // });
+    products?.map(product => {
+      product.avatar =
+        process.env.URL_APP + '/files/products/' + product.avatar;
+    });
     return products;
   }
 }

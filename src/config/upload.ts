@@ -4,6 +4,7 @@ import cryto from 'crypto';
 import fs from 'fs';
 import sharp from 'sharp';
 import puppeteer from 'puppeteer';
+import { Request, Response, NextFunction } from 'express';
 
 const uploadFolder = path.resolve(__dirname, '..', '..', 'uploads');
 const uploadFolderProduct = path.resolve(
@@ -36,6 +37,82 @@ const product_storage = multer.diskStorage({
     cb(null, fullFileName);
   },
 });
+
+const resizeProductImage = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const uploadedFile = req.file;
+
+  if (!uploadedFile) {
+    return res.status(400).json({
+      error: true,
+      message: 'Nenhuma imagem foi enviada.',
+    });
+  }
+
+  const originalImagePath = uploadedFile.path;
+  const dt = new Date();
+  const originalImageName = `product-thumb-${dt.getTime()}${path.extname(
+    uploadedFile.originalname,
+  )}`;
+
+  const convertedImagePath = `${originalImagePath}`;
+
+  sharp(originalImagePath)
+    .resize(300, 300)
+    .toFile(`uploads/products/${originalImageName}`, err => {
+      if (err) {
+        return next(err);
+      }
+
+      uploadedFile.path = convertedImagePath;
+      fs.unlinkSync(originalImagePath);
+
+      if (req.file) {
+        req.file.filename = originalImageName;
+      }
+
+      next();
+    });
+};
+
+const resizeAvatarImage = (req: Request, res: Response, next: NextFunction) => {
+  const uploadedFile = req.file;
+
+  if (!uploadedFile) {
+    return res.status(400).json({
+      error: true,
+      message: 'Nenhuma imagem foi enviada.',
+    });
+  }
+
+  const originalImagePath = uploadedFile.path;
+  const dt = new Date();
+  const originalImageName = `avatar-thumb-${dt.getTime()}${path.extname(
+    uploadedFile.originalname,
+  )}`;
+
+  const convertedImagePath = `${originalImagePath}`;
+
+  sharp(originalImagePath)
+    .resize(300, 300)
+    .toFile(`uploads/avatar/${originalImageName}`, err => {
+      if (err) {
+        return next(err);
+      }
+
+      uploadedFile.path = convertedImagePath;
+      fs.unlinkSync(originalImagePath);
+
+      if (req.file) {
+        req.file.filename = originalImageName;
+      }
+
+      next();
+    });
+};
 
 export default {
   directory: uploadFolder,
@@ -90,4 +167,6 @@ export default {
     console.log('Download e remoção de arquivo concluídos com sucesso!');
     return avatarFileName;
   },
+  resizeProductImage: resizeProductImage,
+  resizeAvatarImage: resizeAvatarImage,
 };
