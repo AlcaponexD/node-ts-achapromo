@@ -33,7 +33,9 @@ export default class UserController {
     return response.json({
       name: user.name,
       email: user.email,
-      avatar: user.avatar ? process.env.URL_APP + '/files/' + user.avatar : '',
+      avatar: user.avatar
+        ? process.env.URL_APP + '/files/avatar/' + user.avatar
+        : '',
       id: user.id,
     });
   }
@@ -52,7 +54,9 @@ export default class UserController {
     return response.json({
       name: user.name,
       email: user.email,
-      avatar: user.avatar ? process.env.URL_APP + '/files/' + user.avatar : '',
+      avatar: user.avatar
+        ? process.env.URL_APP + '/files/avatar/' + user.avatar
+        : '',
       id: user.id,
     });
   }
