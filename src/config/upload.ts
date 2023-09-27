@@ -68,7 +68,11 @@ const resizeProductImage = (
       }
 
       uploadedFile.path = convertedImagePath;
-      fs.unlinkSync(originalImagePath);
+      try {
+        fs.unlinkSync(originalImagePath);
+      } catch (e) {
+        console.log(`Error unlink image > ${e.message}`);
+      }
 
       if (req.file) {
         req.file.filename = originalImageName;
@@ -104,7 +108,11 @@ const resizeAvatarImage = (req: Request, res: Response, next: NextFunction) => {
       }
 
       uploadedFile.path = convertedImagePath;
-      fs.unlinkSync(originalImagePath);
+      try {
+        fs.unlinkSync(originalImagePath);
+      } catch (e) {
+        console.log(`Error unlink image > ${originalImagePath}`);
+      }
 
       if (req.file) {
         req.file.filename = originalImageName;

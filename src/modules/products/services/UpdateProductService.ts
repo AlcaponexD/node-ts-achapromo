@@ -1,6 +1,7 @@
 import { getCustomRepository } from 'typeorm';
 import ProductRepository from '../typeorm/repository/ProductRepository';
 import AppError from '@shared/errors/AppError';
+import CreateProductService from './CreateProductService';
 
 interface IDataUpdate {
   title?: string;
@@ -28,6 +29,15 @@ export default class UpdateProductService {
     if (data.description) {
       productExists.description = data.description;
     }
+
+    if (data.category_name) {
+      const ProductService = new CreateProductService();
+      const category = await ProductService.getCategory(data.category_name);
+      if (category) {
+        productExists.category = category;
+      }
+    }
+
     await productRepository.save(productExists);
 
     return productExists;

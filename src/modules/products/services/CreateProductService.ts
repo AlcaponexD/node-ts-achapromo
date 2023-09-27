@@ -26,7 +26,7 @@ interface IRequest {
 }
 
 export default class CreateProductService {
-  private async getCategory(title: string): Promise<Category | undefined> {
+  public async getCategory(title: string): Promise<Category | undefined> {
     const categoryRepository = getCustomRepository(CategoryRepository);
     const category_exists = await categoryRepository.findByName(title);
     if (category_exists) {
