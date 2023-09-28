@@ -1,11 +1,14 @@
 import { Category } from '../../../categories/typeorm/entities/Category';
 import Store from '../../../stores/typeorm/entities/Store';
 import User from '../../../users/typeorm/entities/User';
+import Comment from '../../../comments/typeorm/entities/Comment';
+
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -58,6 +61,10 @@ class Product {
   @OneToOne(() => Category, category => category.products)
   @JoinColumn({ name: 'category_id' })
   category: Category;
+
+  @OneToMany(() => Comment, comment => comment.product)
+  @JoinColumn()
+  comments: Comment[];
 
   @Column({
     type: 'enum',

@@ -112,8 +112,6 @@ export default class CreateProductService {
     //Get Category
     jsonFinal.category = await this.getCategory(jsonFinal.category_name);
 
-    return jsonFinal;
-
     const product = productRepository.create(jsonFinal);
     await productRepository.save(product);
 

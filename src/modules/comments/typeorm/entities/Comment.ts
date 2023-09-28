@@ -1,3 +1,4 @@
+import Product from '@modules/products/typeorm/entities/Product';
 import User from '../../../users/typeorm/entities/User';
 import {
   Column,
@@ -29,10 +30,17 @@ class Comment {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
+  @Column()
+  product_id: string;
+
+  @OneToOne(() => Product, { primary: true, cascade: true })
+  @JoinColumn({ name: 'product_id' })
+  product: Product;
+
   @Column({
     type: 'enum',
     enum: publishedEnum,
-    default: publishedEnum.Option1,
+    default: publishedEnum.Option2,
   })
   published: publishedEnum;
 
