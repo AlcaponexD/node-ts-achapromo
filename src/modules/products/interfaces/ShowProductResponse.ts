@@ -19,4 +19,13 @@ export default interface iShowProductResponse {
     id: string;
     title: string;
   };
+  comments: {
+    id: string;
+    content: string;
+    created_at: Date;
+    user: {
+      id: string;
+      name: string;
+    };
+  }[];
 }
