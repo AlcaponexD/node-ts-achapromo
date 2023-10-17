@@ -82,10 +82,10 @@ export default class CreateProductService {
 
   public async execute(data: IRequest): Promise<any> {
     const productRepository = getCustomRepository(ProductRepository);
-    const productExists = await productRepository.findByUrl(data.url);
-    if (productExists) {
-      throw new AppError('Produto já existente');
-    }
+    // const productExists = await productRepository.findByUrl(data.url);
+    // if (productExists) {
+    //   throw new AppError('Produto já existente');
+    // }
 
     data.published = publishedEnum.Option1;
     data.in_review = InReviewEnum.Option1;

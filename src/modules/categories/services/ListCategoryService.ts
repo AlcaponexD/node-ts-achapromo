@@ -54,7 +54,8 @@ class ListCategoryService {
 
     const final_products = products.map(product => {
       if (product) {
-        product.avatar = process.env.URL_APP + '/files/' + product.avatar;
+        product.avatar =
+          process.env.URL_APP + '/files/products/' + product.avatar;
       }
       return product;
     });
