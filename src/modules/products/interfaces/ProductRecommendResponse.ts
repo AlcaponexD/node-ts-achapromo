@@ -1,3 +1,7 @@
+interface comments {
+  id: string;
+}
+
 export default interface iProductRecommendResponse {
   id: string;
   title: string;
@@ -19,4 +23,5 @@ export default interface iProductRecommendResponse {
     id: string;
     title: string;
   };
+  comments: comments[];
 }

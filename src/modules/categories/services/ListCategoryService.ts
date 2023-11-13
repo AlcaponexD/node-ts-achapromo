@@ -37,6 +37,7 @@ class ListCategoryService {
       .leftJoin('product.store', 'store')
       .leftJoin('product.user', 'user')
       .innerJoin('product.category', 'category')
+      .leftJoin('product.comments', 'comments')
       .addSelect([
         'store.id',
         'store.title',
@@ -44,6 +45,7 @@ class ListCategoryService {
         'user.name',
         'category.id',
         'category.title',
+        'comments.id',
       ])
       .where({
         in_review: 0,
