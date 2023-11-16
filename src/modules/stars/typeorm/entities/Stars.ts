@@ -1,5 +1,3 @@
-import Product from '../../../products/typeorm/entities/Product';
-import User from '../../../users/typeorm/entities/User';
 import {
   Column,
   CreateDateColumn,
@@ -10,18 +8,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum publishedEnum {
-  Option1 = '0',
-  Option2 = '1',
-}
+import Product from '../../../products/typeorm/entities/Product';
+import User from '../../../users/typeorm/entities/User';
 
-@Entity('comments')
-class Comment {
+@Entity('product_stars')
+class Stars {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column()
-  content: string;
 
   @Column()
   user_id: string;
@@ -37,13 +30,6 @@ class Comment {
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  @Column({
-    type: 'enum',
-    enum: publishedEnum,
-    default: publishedEnum.Option2,
-  })
-  published: publishedEnum;
-
   @CreateDateColumn()
   created_at: Date;
 
@@ -51,4 +37,4 @@ class Comment {
   updated_at: Date;
 }
 
-export default Comment;
+export default Stars;
