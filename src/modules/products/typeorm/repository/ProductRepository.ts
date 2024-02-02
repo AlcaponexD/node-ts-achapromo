@@ -2,7 +2,7 @@ import { EntityRepository, Repository, getRepository } from 'typeorm';
 import Product from '../entities/Product';
 import iProductRecommendResponse from '../../interfaces/ProductRecommendResponse';
 import iShowProductResponse from '../../interfaces/ShowProductResponse';
-import IMyProductsResponse from '@modules/products/interfaces/MyProductsResponse';
+import IMyProductsResponse from '../../interfaces/MyProductsResponse';
 
 @EntityRepository(Product)
 class ProductRepository extends Repository<Product> {
@@ -129,6 +129,19 @@ class ProductRepository extends Repository<Product> {
       })
       .getOneOrFail();
     return product;
+  }
+
+  public async updateClassification(
+    id: string,
+    count: number,
+  ): Promise<boolean> {
+    await this.createQueryBuilder()
+      .update(Product)
+      .set({ classification: count })
+      .where('id = :id', { id })
+      .execute();
+
+    return true;
   }
 }
 export default ProductRepository;

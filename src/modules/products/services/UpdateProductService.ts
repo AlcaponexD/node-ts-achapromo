@@ -2,6 +2,8 @@ import { getCustomRepository } from 'typeorm';
 import ProductRepository from '../typeorm/repository/ProductRepository';
 import AppError from '@shared/errors/AppError';
 import CreateProductService from './CreateProductService';
+import Product from '../typeorm/entities/Product';
+import { count } from 'console';
 
 interface IDataUpdate {
   title?: string;
@@ -42,10 +44,26 @@ export default class UpdateProductService {
 
     return productExists;
   }
-  public async changeStarsCount(
-    uuid: string,
-    action: string,
-  ): Promise<boolean> {
+  public async changeStarsCount(id: string, action: string): Promise<boolean> {
+    const productRepository = getCustomRepository(ProductRepository);
+    let counts = 0;
+
+    const product = await productRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (product) {
+      if (action == 'up') {
+        counts = product.classification ? product.classification + 1 : 1;
+      } else {
+        counts = product.classification ? product.classification - 1 : 1;
+      }
+      //Update
+      await productRepository.updateClassification(id, counts);
+    }
+
     return true;
   }
 }
