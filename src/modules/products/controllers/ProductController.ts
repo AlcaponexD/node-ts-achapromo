@@ -5,6 +5,8 @@ import ListProductService from '../services/ListProductsService';
 import UsersRepository from '../../users/typeorm/repositories/UsersRepository';
 import UpdateProductService from '../services/UpdateProductService';
 import UpdateAvatarProductServce from '../services/UpdateAvatarProductService';
+import StarService from '@modules/stars/services/StarService';
+import AppError from '@shared/errors/AppError';
 
 export default class ProductControlller {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -73,5 +75,24 @@ export default class ProductControlller {
     });
 
     return response.json(product);
+  }
+
+  public async updateClassification(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    if (!request.params.id) {
+      throw new AppError('Uuid not sended', 422);
+    }
+    const uuid = request.params.id;
+
+    const starService = new StarService();
+    const productService = new UpdateProductService();
+
+    const action = await starService.syncStarByProductId(uuid, request.user.id);
+
+    const isChanged = await productService.changeStarsCount(uuid, action);
+
+    return response.json(isChanged);
   }
 }

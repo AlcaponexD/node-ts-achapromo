@@ -29,6 +29,7 @@ class ProductRepository extends Repository<Product> {
         'product.description',
         'product.classification',
         'product.created_at',
+        'product.stars as classification',
       ])
       .leftJoin('product.store', 'store')
       .leftJoin('product.user', 'user')
@@ -67,10 +68,12 @@ class ProductRepository extends Repository<Product> {
         'product.created_at',
         'product.published',
         'product.in_review',
+        'product.stars as classification',
       ])
       .leftJoin('product.store', 'store')
       .innerJoin('product.user', 'user')
       .leftJoin('product.category', 'category')
+      .leftJoin('product.comments', 'comments')
       .addSelect([
         'store.id',
         'store.title',
@@ -78,6 +81,7 @@ class ProductRepository extends Repository<Product> {
         'user.name',
         'category.id',
         'category.title',
+        'comments.id',
       ])
       .where({
         user: user_id,
@@ -100,6 +104,7 @@ class ProductRepository extends Repository<Product> {
         'product.description',
         'product.classification',
         'product.created_at',
+        'product.stars as classification',
       ])
       .leftJoin('product.store', 'store')
       .leftJoin('product.user', 'user')

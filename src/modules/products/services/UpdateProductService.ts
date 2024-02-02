@@ -42,4 +42,10 @@ export default class UpdateProductService {
 
     return productExists;
   }
+  public async changeStarsCount(
+    uuid: string,
+    action: string,
+  ): Promise<boolean> {
+    return true;
+  }
 }

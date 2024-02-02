@@ -31,6 +31,12 @@ productRouter.get(
   isAuthenticated,
   productController.showMyProducts,
 );
+
+productRouter.put(
+  '/:id/classification',
+  isAuthenticated,
+  productController.updateClassification,
+);
 productRouter.get('/:id', productController.showProduct);
 productRouter.put(
   '/:id',
