@@ -44,7 +44,7 @@ export default class UpdateProductService {
 
     return productExists;
   }
-  public async changeStarsCount(id: string, action: string): Promise<boolean> {
+  public async changeStarsCount(id: string, action: string): Promise<string> {
     const productRepository = getCustomRepository(ProductRepository);
     let counts = 0;
 
@@ -64,6 +64,6 @@ export default class UpdateProductService {
       await productRepository.updateClassification(id, counts);
     }
 
-    return true;
+    return action;
   }
 }
