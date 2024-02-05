@@ -67,8 +67,14 @@ const resizeProductImage = async (
       convertedImagePath: convertedImagePath,
     });
 
-    await sharp(originalImagePath).resize(300, 300).toFile(convertedImagePath);
-
+    try {
+      await sharp(originalImagePath)
+        .resize(300, 300)
+        .toFile(convertedImagePath);
+    } catch (error) {
+      logger.error(error);
+      return next(error);
+    }
     uploadedFile.path = convertedImagePath;
     fs.unlinkSync(originalImagePath);
 
