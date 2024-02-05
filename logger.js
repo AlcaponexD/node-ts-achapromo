@@ -12,7 +12,7 @@ if (!fs.existsSync(logsDirectory)) {
 
 // Configuração do logger
 const logger = winston.createLogger({
-    level: 'info',
+    level: 'error',
     format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json()
