@@ -74,6 +74,15 @@ const resizeProductImage = async (
       originalImagePath,
     });
 
+    if (!fs.existsSync(originalImagePath)) {
+      logger.error({
+        error: 2,
+        message: 'O arquivo original não existe',
+        originalImagePath,
+      });
+      return next(new Error('O arquivo original não existe'));
+    }
+
     try {
       await sharp(originalImagePath)
         .resize(300, 300)
