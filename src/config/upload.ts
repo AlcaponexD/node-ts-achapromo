@@ -68,14 +68,27 @@ const resizeProductImage = async (
       convertedImagePath: convertedImagePath,
     });
 
-    logger.error({ message: 'Antes da operação sharp' });
+    logger.error({
+      message: 'Antes da operação sharp',
+      convertedImagePath,
+      originalImagePath,
+    });
 
     try {
       await sharp(originalImagePath)
         .resize(300, 300)
         .toFile(convertedImagePath);
+
+      logger.error({
+        message: 'Operação sharp concluída com sucesso',
+        convertedImagePath,
+      });
     } catch (error) {
-      logger.error(error);
+      logger.error({
+        message: 'Erro durante a operação sharp',
+        convertedImagePath,
+        error,
+      });
       return next(error);
     }
 
