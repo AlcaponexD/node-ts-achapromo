@@ -62,7 +62,10 @@ const resizeProductImage = (
 
     const convertedImagePath = `${originalImagePath}`;
 
-    logger.error(convertedImagePath);
+    logger.error({
+      error: 1,
+      convertedImagePath: convertedImagePath,
+    });
 
     sharp(originalImagePath)
       .resize(300, 300)
@@ -80,8 +83,11 @@ const resizeProductImage = (
           console.log(`Error unlink image > ${e.message}`);
         }
 
-        logger.error(req.file);
-        logger.error(originalImageName);
+        logger.error({
+          error: 2,
+          re: req.file,
+          originalImageName: originalImageName,
+        });
 
         if (req.file) {
           req.file.filename = originalImageName;
