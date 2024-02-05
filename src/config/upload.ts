@@ -62,6 +62,8 @@ const resizeProductImage = (
 
     const convertedImagePath = `${originalImagePath}`;
 
+    logger.error(convertedImagePath);
+
     sharp(originalImagePath)
       .resize(300, 300)
       .toFile(`uploads/products/${originalImageName}`, err => {
@@ -77,6 +79,9 @@ const resizeProductImage = (
           logger.error(e);
           console.log(`Error unlink image > ${e.message}`);
         }
+
+        logger.error(req.file);
+        logger.error(originalImageName);
 
         if (req.file) {
           req.file.filename = originalImageName;
