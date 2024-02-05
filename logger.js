@@ -22,13 +22,8 @@ const logger = winston.createLogger({
             filename: path.join(logsDirectory, 'error.log'),
             level: 'error',
             format: winston.format.json(),
-        }),
-        new winston.transports.File({
-            filename: path.join(logsDirectory, 'info.log'),
-            level: 'info',
-            format: winston.format.json(),
-        }),
+        })
     ],
-});
+},);
 
 module.exports = logger;
