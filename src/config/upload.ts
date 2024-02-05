@@ -6,6 +6,8 @@ import sharp from 'sharp';
 import puppeteer from 'puppeteer';
 import { Request, Response, NextFunction } from 'express';
 import logger from '../../logger';
+import image_size from 'image-size';
+import Jimp from 'jimp';
 
 const uploadFolder = path.resolve(__dirname, '..', '..', 'uploads');
 const uploadFolderProduct = path.resolve(
@@ -68,7 +70,8 @@ const resizeProductImage = async (
       convertedImagePath: convertedImagePath,
     });
 
-    logger.error({ message: 'Antes da operação sharp' });
+    logger.error({ message: 'Antes da operação jimp' });
+
     // Verifica se o arquivo original existe
     if (!fs.existsSync(originalImagePath)) {
       return res.status(404).json({
@@ -77,16 +80,20 @@ const resizeProductImage = async (
       });
     }
 
+    // Obtém as dimensões da imagem usando image-size
+    const dimensions = image_size(originalImagePath);
+    const { width, height } = dimensions;
+
+    // Redimensiona a imagem usando jimp
     try {
-      await sharp(originalImagePath)
-        .resize(300, 300)
-        .toFile(convertedImagePath);
+      const image = await Jimp.read(originalImagePath);
+      await image.resize(300, 300).write(convertedImagePath);
     } catch (error) {
       logger.error(error);
       return next(error);
     }
 
-    logger.error({ message: 'Após a operação sharp' });
+    logger.error({ message: 'Após a operação jimp' });
 
     uploadedFile.path = convertedImagePath;
     fs.unlinkSync(originalImagePath);
