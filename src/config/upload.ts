@@ -90,45 +90,49 @@ const resizeProductImage = (
 };
 
 const resizeAvatarImage = (req: Request, res: Response, next: NextFunction) => {
-  const uploadedFile = req.file;
+  try {
+    const uploadedFile = req.file;
 
-  if (!uploadedFile) {
-    return res.status(400).json({
-      error: true,
-      message: 'Nenhuma imagem foi enviada.',
-    });
+    if (!uploadedFile) {
+      return res.status(400).json({
+        error: true,
+        message: 'Nenhuma imagem foi enviada.',
+      });
+    }
+
+    const originalImagePath = uploadedFile.path;
+    const dt = new Date();
+    const originalImageName = `avatar-thumb-${dt.getTime()}${path.extname(
+      uploadedFile.originalname,
+    )}`;
+
+    const convertedImagePath = `${originalImagePath}`;
+
+    sharp(originalImagePath)
+      .resize(300, 300)
+      .toFile(`uploads/avatar/${originalImageName}`, err => {
+        if (err) {
+          logger.error(err);
+          return next(err);
+        }
+
+        uploadedFile.path = convertedImagePath;
+        try {
+          fs.unlinkSync(originalImagePath);
+        } catch (e) {
+          logger.error(e);
+          console.log(`Error unlink image > ${originalImagePath}`);
+        }
+
+        if (req.file) {
+          req.file.filename = originalImageName;
+        }
+
+        next();
+      });
+  } catch (error) {
+    logger.error(error);
   }
-
-  const originalImagePath = uploadedFile.path;
-  const dt = new Date();
-  const originalImageName = `avatar-thumb-${dt.getTime()}${path.extname(
-    uploadedFile.originalname,
-  )}`;
-
-  const convertedImagePath = `${originalImagePath}`;
-
-  sharp(originalImagePath)
-    .resize(300, 300)
-    .toFile(`uploads/avatar/${originalImageName}`, err => {
-      if (err) {
-        logger.error(err);
-        return next(err);
-      }
-
-      uploadedFile.path = convertedImagePath;
-      try {
-        fs.unlinkSync(originalImagePath);
-      } catch (e) {
-        logger.error(e);
-        console.log(`Error unlink image > ${originalImagePath}`);
-      }
-
-      if (req.file) {
-        req.file.filename = originalImageName;
-      }
-
-      next();
-    });
 };
 
 export default {
