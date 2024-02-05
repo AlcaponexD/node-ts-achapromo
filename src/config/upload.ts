@@ -69,6 +69,13 @@ const resizeProductImage = async (
     });
 
     logger.error({ message: 'Antes da operação sharp' });
+    // Verifica se o arquivo original existe
+    if (!fs.existsSync(originalImagePath)) {
+      return res.status(404).json({
+        error: true,
+        message: 'O arquivo original não foi encontrado.',
+      });
+    }
 
     try {
       await sharp(originalImagePath)
