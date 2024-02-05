@@ -68,37 +68,14 @@ const resizeProductImage = async (
       convertedImagePath: convertedImagePath,
     });
 
-    logger.error({
-      message: 'Antes da operação sharp',
-      convertedImagePath,
-      originalImagePath,
-    });
-
-    if (!fs.existsSync(originalImagePath)) {
-      logger.error({
-        error: 2,
-        message: 'O arquivo original não existe',
-        originalImagePath,
-      });
-      return next(new Error('O arquivo original não existe'));
-    }
+    logger.error({ message: 'Antes da operação sharp' });
 
     try {
-      const retorno = await sharp(originalImagePath)
+      await sharp(originalImagePath)
         .resize(300, 300)
         .toFile(convertedImagePath);
-
-      logger.error({
-        message: 'Operação sharp concluída com sucesso',
-        convertedImagePath,
-        retorno: retorno,
-      });
     } catch (error) {
-      logger.error({
-        message: 'Erro durante a operação sharp',
-        convertedImagePath,
-        error,
-      });
+      logger.error(error);
       return next(error);
     }
 
