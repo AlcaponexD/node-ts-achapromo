@@ -60,12 +60,19 @@ const resizeProductImage = async (
       uploadedFile.originalname,
     )}`;
 
-    const convertedImagePath = `uploads/products/${originalImageName}`;
+    const convertedImagePath = path.join(
+      __dirname,
+      'uploads',
+      'products',
+      originalImageName,
+    );
 
     logger.error({
       error: 1,
       convertedImagePath: convertedImagePath,
     });
+
+    logger.error({ message: 'Antes da operação sharp' });
 
     try {
       await sharp(originalImagePath)
@@ -75,6 +82,9 @@ const resizeProductImage = async (
       logger.error(error);
       return next(error);
     }
+
+    logger.error({ message: 'Após a operação sharp' });
+
     uploadedFile.path = convertedImagePath;
     fs.unlinkSync(originalImagePath);
 
@@ -112,7 +122,12 @@ const resizeAvatarImage = (req: Request, res: Response, next: NextFunction) => {
       uploadedFile.originalname,
     )}`;
 
-    const convertedImagePath = `${originalImagePath}`;
+    const convertedImagePath = path.join(
+      __dirname,
+      'uploads',
+      'products',
+      originalImageName,
+    );
 
     sharp(originalImagePath)
       .resize(300, 300)
