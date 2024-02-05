@@ -60,12 +60,8 @@ const resizeProductImage = async (
       uploadedFile.originalname,
     )}`;
 
-    const convertedImagePath = path.join(
-      __dirname,
-      'uploads',
-      'products',
-      originalImageName,
-    );
+    const productsFolder = path.join(uploadFolder, 'products');
+    const convertedImagePath = path.join(productsFolder, originalImageName);
 
     logger.error({
       error: 1,
