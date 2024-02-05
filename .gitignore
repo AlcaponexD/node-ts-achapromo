@@ -9,7 +9,7 @@ coverage
 ormconfig.json
 dist
 .docker/dbdata
-
-
+error.log
+info.log
 uploads/*
 !uploads/.gitkeep
