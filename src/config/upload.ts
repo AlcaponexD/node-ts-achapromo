@@ -5,6 +5,7 @@ import fs from 'fs';
 import sharp from 'sharp';
 import puppeteer from 'puppeteer';
 import { Request, Response, NextFunction } from 'express';
+import logger from '../../logger';
 
 const uploadFolder = path.resolve(__dirname, '..', '..', 'uploads');
 const uploadFolderProduct = path.resolve(
@@ -64,6 +65,7 @@ const resizeProductImage = (
     .resize(300, 300)
     .toFile(`uploads/products/${originalImageName}`, err => {
       if (err) {
+        logger.error(err);
         return next(err);
       }
 
@@ -71,6 +73,7 @@ const resizeProductImage = (
       try {
         fs.unlinkSync(originalImagePath);
       } catch (e) {
+        logger.error(e);
         console.log(`Error unlink image > ${e.message}`);
       }
 
@@ -104,6 +107,7 @@ const resizeAvatarImage = (req: Request, res: Response, next: NextFunction) => {
     .resize(300, 300)
     .toFile(`uploads/avatar/${originalImageName}`, err => {
       if (err) {
+        logger.error(err);
         return next(err);
       }
 
@@ -111,6 +115,7 @@ const resizeAvatarImage = (req: Request, res: Response, next: NextFunction) => {
       try {
         fs.unlinkSync(originalImagePath);
       } catch (e) {
+        logger.error(e);
         console.log(`Error unlink image > ${originalImagePath}`);
       }
 
@@ -163,6 +168,8 @@ export default {
       // Remove o arquivo existente
       await fs.promises.unlink(productAvatarFilePath);
     } catch (error) {
+      logger.error(error);
+
       // O arquivo do avatar do produto não existe
     }
     // Comprime a imagem para reduzir o tamanho

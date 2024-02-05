@@ -10,6 +10,8 @@ import '../../shared/typeorm/index';
 import { errors } from 'celebrate';
 import uploadConfig from '../../config/upload';
 import AppError from '../errors/AppError';
+import logger from '../../../logger';
+import { log } from 'console';
 
 const app = express();
 // Put these statements before you define any routes.
@@ -35,6 +37,11 @@ app.use(errors());
 //AppError
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   if (error instanceof AppError) {
+    logger.error({
+      status: 'error',
+      message: error.message,
+    });
+
     return res.status(error.statusCode).json({
       status: error.statusCode,
       message: error.message,
@@ -42,6 +49,12 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   }
 
   const stack = new Error().stack;
+  logger.error({
+    status: 'error',
+    message: error.message,
+    stack: stack,
+  });
+
   return res.status(500).json({
     status: 'error',
     message: error.message,
