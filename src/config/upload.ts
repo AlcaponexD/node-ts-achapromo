@@ -84,13 +84,14 @@ const resizeProductImage = async (
     }
 
     try {
-      await sharp(originalImagePath)
+      const retorno = await sharp(originalImagePath)
         .resize(300, 300)
         .toFile(convertedImagePath);
 
       logger.error({
         message: 'Operação sharp concluída com sucesso',
         convertedImagePath,
+        retorno: retorno,
       });
     } catch (error) {
       logger.error({
