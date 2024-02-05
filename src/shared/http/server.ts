@@ -13,6 +13,11 @@ import AppError from '../errors/AppError';
 import logger from '../../../logger';
 import { log } from 'console';
 
+process.on('uncaughtException', err => {
+  logger.error('Erro não capturado:', err);
+  // Adicione lógica para lidar com o erro ou registrar detalhes relevantes
+});
+
 const app = express();
 // Put these statements before you define any routes.
 app.use(bodyParser.json());
