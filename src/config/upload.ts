@@ -39,7 +39,7 @@ const product_storage = multer.diskStorage({
   },
 });
 
-const resizeProductImage = (
+const resizeProductImage = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -60,43 +60,32 @@ const resizeProductImage = (
       uploadedFile.originalname,
     )}`;
 
-    const convertedImagePath = `${originalImagePath}`;
+    const convertedImagePath = `uploads/products/${originalImageName}`;
 
     logger.error({
       error: 1,
       convertedImagePath: convertedImagePath,
     });
 
-    sharp(originalImagePath)
-      .resize(300, 300)
-      .toFile(`uploads/products/${originalImageName}`, err => {
-        if (err) {
-          logger.error(err);
-          return next(err);
-        }
+    await sharp(originalImagePath).resize(300, 300).toFile(convertedImagePath);
 
-        uploadedFile.path = convertedImagePath;
-        try {
-          fs.unlinkSync(originalImagePath);
-        } catch (e) {
-          logger.error(e);
-          console.log(`Error unlink image > ${e.message}`);
-        }
+    uploadedFile.path = convertedImagePath;
+    fs.unlinkSync(originalImagePath);
 
-        logger.error({
-          error: 2,
-          re: req.file,
-          originalImageName: originalImageName,
-        });
+    logger.error({
+      error: 2,
+      re: req.file,
+      originalImageName: originalImageName,
+    });
 
-        if (req.file) {
-          req.file.filename = originalImageName;
-        }
+    if (req.file) {
+      req.file.filename = originalImageName;
+    }
 
-        next();
-      });
+    next();
   } catch (error) {
     logger.error(error);
+    next(error);
   }
 };
 
