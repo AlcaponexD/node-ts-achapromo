@@ -5,6 +5,7 @@ import UsersRepository from '../typeorm/repositories/UsersRepository';
 import uploadConfig from '../../../config/upload';
 import fs from 'fs';
 import AppError from '../../../shared/errors/AppError';
+import logger from '../../../../logger';
 
 interface IRequest {
   user_id: string;
@@ -31,7 +32,7 @@ class UpdateUserAvatarService {
           await fs.promises.unlink(UserAvatarFilePath);
         }
       } catch (error: any) {
-        console.log(error.message);
+        logger.error(error);
       }
     }
 

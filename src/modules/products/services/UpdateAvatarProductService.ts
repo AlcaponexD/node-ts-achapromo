@@ -6,6 +6,7 @@ import uploadConfig from '../../../config/upload';
 import fs from 'fs';
 import AppError from '../../../shared/errors/AppError';
 import iShowProductResponse from '../interfaces/ShowProductResponse';
+import logger from '../../../../logger';
 
 interface IRequest {
   id: string;
@@ -38,7 +39,7 @@ class UpdateAvatarProductServce {
           await fs.promises.unlink(ProductAvatarFilePath);
         }
       } catch (error) {
-        console.log(error);
+        logger.error(error);
       }
 
       product.avatar = avatarFileName;
