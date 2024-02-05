@@ -11,7 +11,7 @@ class Terabyte {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
-    //Nova guia
+    //Nova guia2
     const page = await browser.newPage();
 
     //Bypass checking browser cloudflare
