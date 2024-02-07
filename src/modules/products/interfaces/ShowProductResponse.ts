@@ -14,6 +14,7 @@ export default interface iShowProductResponse {
   user: {
     id: string;
     name: string;
+    avatar?: string;
   };
   category: {
     id: string;
@@ -26,6 +27,7 @@ export default interface iShowProductResponse {
     user: {
       id: string;
       name: string;
+      avatar?: string;
     };
   }[];
 }

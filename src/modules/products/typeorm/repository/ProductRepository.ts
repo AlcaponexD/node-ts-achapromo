@@ -116,6 +116,7 @@ class ProductRepository extends Repository<Product> {
         'store.title',
         'user.id',
         'user.name',
+        'user.avatar',
         'category.id',
         'category.title',
         'comments.id',
@@ -123,6 +124,7 @@ class ProductRepository extends Repository<Product> {
         'comments.created_at',
         'comments_user.name',
         'comments_user.id',
+        'comments_user.avatar',
       ])
       .where({
         id,

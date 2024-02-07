@@ -25,6 +25,17 @@ export default class ListProductService {
     if (product) {
       product.avatar =
         process.env.URL_APP + '/files/products/' + product.avatar;
+      if (product.user.avatar) {
+        product.user.avatar =
+          process.env.URL_APP + '/files/avatar/' + product.user.avatar;
+      }
+      product.comments = product.comments.map(comment => {
+        if (comment.user.avatar) {
+          comment.user.avatar =
+            process.env.URL_APP + '/files/avatar/' + comment.user.avatar;
+        }
+        return comment;
+      });
     }
     return product;
   }
