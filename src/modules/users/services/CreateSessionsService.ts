@@ -45,7 +45,7 @@ class CreateSessionService {
         name: user.name,
         email: user.email,
         avatar: user.avatar
-          ? process.env.URL_APP + '/files/' + user.avatar
+          ? process.env.URL_APP + '/files/avatar/' + user.avatar
           : '',
         id: user.id,
       },
