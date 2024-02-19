@@ -1,8 +1,15 @@
-import { EntityRepository, Repository, getRepository } from 'typeorm';
+import {
+  EntityRepository,
+  ILike,
+  Like,
+  Repository,
+  getRepository,
+} from 'typeorm';
 import Product from '../entities/Product';
-import iProductRecommendResponse from '../../interfaces/ProductRecommendResponse';
+import iProductListResponse from '../../interfaces/ProductListResponse';
 import iShowProductResponse from '../../interfaces/ShowProductResponse';
 import IMyProductsResponse from '../../interfaces/MyProductsResponse';
+import iProductSearchListResponse from '../../interfaces/SearchProductResponse';
 
 @EntityRepository(Product)
 class ProductRepository extends Repository<Product> {
@@ -15,9 +22,7 @@ class ProductRepository extends Repository<Product> {
 
     return product;
   }
-  public async findRecommends(): Promise<
-    iProductRecommendResponse[] | undefined
-  > {
+  public async findRecommends(): Promise<iProductListResponse[] | undefined> {
     const products = await getRepository(Product)
       .createQueryBuilder('product')
       .select([
@@ -48,6 +53,94 @@ class ProductRepository extends Repository<Product> {
         in_review: 0,
         published: 1,
       })
+      .getMany();
+    return products;
+  }
+
+  public async searchProducts(
+    query: any,
+  ): Promise<iProductSearchListResponse | undefined> {
+    const perPage = parseInt(query.per_page) || 10; // Número padrão de registros por página
+    const page = parseInt(query.page) || 1; // Número padrão da página
+
+    const keyword = query.search || '';
+    const [products, total] = await getRepository(Product)
+      .createQueryBuilder('product')
+      .select([
+        'product.id',
+        'product.title',
+        'product.url',
+        'product.avatar',
+        'product.price',
+        'product.description',
+        'product.classification',
+        'product.created_at',
+      ])
+      .leftJoin('product.store', 'store')
+      .leftJoin('product.user', 'user') // Alias 'user' para a tabela de usuários
+      .leftJoin('product.category', 'category')
+      .leftJoin('product.comments', 'comments')
+      .addSelect([
+        'store.id',
+        'store.title',
+        'user.id', // Corrigido: use o alias 'user' para referenciar a tabela de usuários
+        'user.name', // Corrigido: use o alias 'user' para referenciar a tabela de usuários
+        'category.id',
+        'category.title',
+        'comments.id',
+      ])
+      .where({
+        title: ILike('%' + keyword + '%'),
+        in_review: 0,
+        published: 1,
+      })
+      .orderBy('product.title', 'DESC')
+      .take(perPage)
+      .skip((page - 1) * perPage)
+      .getManyAndCount();
+
+    const totalPages = Math.ceil(total / perPage);
+    const nextPage = page < totalPages;
+
+    return {
+      products: products,
+      total: totalPages,
+      next_page: nextPage,
+    };
+  }
+
+  public async findTops(): Promise<any[] | undefined> {
+    const products = await getRepository(Product)
+      .createQueryBuilder('product')
+      .select([
+        'product.id',
+        'product.title',
+        'product.url',
+        'product.avatar',
+        'product.price',
+        'product.description',
+        'product.classification',
+        'product.created_at',
+        'product.stars as classification',
+      ])
+      .leftJoin('product.store', 'store')
+      .leftJoin('product.user', 'user')
+      .leftJoin('product.category', 'category')
+      .leftJoin('product.comments', 'comments')
+      .addSelect([
+        'store.id',
+        'store.title',
+        'user.id',
+        'user.name',
+        'category.id',
+        'category.title',
+        'comments.id',
+      ])
+      .where({
+        in_review: 0,
+        published: 1,
+      })
+      .orderBy('product.stars', 'DESC')
       .getMany();
     return products;
   }

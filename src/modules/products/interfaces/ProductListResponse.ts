@@ -2,7 +2,7 @@ interface comments {
   id: string;
 }
 
-export default interface iProductRecommendResponse {
+export default interface iProductListResponse {
   id: string;
   title: string;
   url: string;

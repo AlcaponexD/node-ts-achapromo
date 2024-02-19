@@ -50,7 +50,7 @@ class Product {
   @Column()
   classification: number;
 
-  @OneToOne(() => User, { primary: true, cascade: true })
+  @OneToOne(() => User, { cascade: true })
   @JoinColumn({ name: 'user_id' })
   user: User;
 

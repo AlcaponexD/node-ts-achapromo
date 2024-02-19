@@ -35,6 +35,15 @@ export default class ProductControlller {
     return response.json(products);
   }
 
+  public async listTops(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const productService = new ListProductService();
+    const products = await productService.topProducts();
+    return response.json(products);
+  }
+
   public async showProduct(
     request: Request,
     response: Response,
@@ -51,6 +60,15 @@ export default class ProductControlller {
     const productService = new ListProductService();
 
     const product = await productService.productByUserLogged(request.user.id);
+    return response.json(product);
+  }
+  public async searchProducts(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const productService = new ListProductService();
+
+    const product = await productService.search(request.query);
     return response.json(product);
   }
 
