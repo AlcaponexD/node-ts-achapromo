@@ -52,6 +52,18 @@ export default class ListProductService {
     });
     return products;
   }
+  public async newsProducts() {
+    const productRepository = getCustomRepository(ProductRepository);
+    const top = await productRepository.findNews();
+    const products = top?.map(product => {
+      if (product.avatar) {
+        product.avatar =
+          process.env.URL_APP + '/files/products/' + product.avatar;
+      }
+      return product;
+    });
+    return products;
+  }
 
   public async productById(
     id: string,

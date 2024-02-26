@@ -27,6 +27,7 @@ productRouter.post(
 
 productRouter.get('/recommends', productController.listRecommends);
 productRouter.get('/tops', productController.listTops);
+productRouter.get('/news', productController.listNews);
 productRouter.get('/search', productController.searchProducts);
 
 productRouter.get(

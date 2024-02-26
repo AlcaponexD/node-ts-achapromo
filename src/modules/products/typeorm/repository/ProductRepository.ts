@@ -1,7 +1,9 @@
 import {
   EntityRepository,
   ILike,
+  IsNull,
   Like,
+  Not,
   Repository,
   getRepository,
 } from 'typeorm';
@@ -121,6 +123,41 @@ class ProductRepository extends Repository<Product> {
         'product.description',
         'product.classification',
         'product.created_at',
+      ])
+      .leftJoin('product.store', 'store')
+      .leftJoin('product.user', 'user')
+      .leftJoin('product.category', 'category')
+      .leftJoin('product.comments', 'comments')
+      .addSelect([
+        'store.id',
+        'store.title',
+        'user.id',
+        'user.name',
+        'category.id',
+        'category.title',
+        'comments.id',
+      ])
+      .where({
+        in_review: 0,
+        published: 1,
+        classification: Not(IsNull()),
+      })
+      .orderBy('product.classification', 'DESC')
+      .getMany();
+    return products;
+  }
+  public async findNews(): Promise<any[] | undefined> {
+    const products = await getRepository(Product)
+      .createQueryBuilder('product')
+      .select([
+        'product.id',
+        'product.title',
+        'product.url',
+        'product.avatar',
+        'product.price',
+        'product.description',
+        'product.classification',
+        'product.created_at',
         'product.stars as classification',
       ])
       .leftJoin('product.store', 'store')
@@ -140,7 +177,7 @@ class ProductRepository extends Repository<Product> {
         in_review: 0,
         published: 1,
       })
-      .orderBy('product.stars', 'DESC')
+      .orderBy('product.created_at', 'DESC')
       .getMany();
     return products;
   }

@@ -44,6 +44,15 @@ export default class ProductControlller {
     return response.json(products);
   }
 
+  public async listNews(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const productService = new ListProductService();
+    const products = await productService.newsProducts();
+    return response.json(products);
+  }
+
   public async showProduct(
     request: Request,
     response: Response,
