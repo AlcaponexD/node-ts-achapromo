@@ -18,6 +18,14 @@ class ListUserService {
 
     return users;
   }
+
+  public async findUserByEmail(email: string): Promise<User | undefined> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const users = usersRepository.findByEmail(email);
+
+    return users;
+  }
 }
 
 export default ListUserService;

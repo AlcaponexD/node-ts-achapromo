@@ -96,4 +96,14 @@ export default class ListProductService {
     });
     return products;
   }
+
+  public async productInReview(): Promise<any[] | undefined> {
+    const productRepository = getCustomRepository(ProductRepository);
+    const products = await productRepository.findProductsInReview();
+    products?.map(product => {
+      product.avatar =
+        process.env.URL_APP + '/files/products/' + product.avatar;
+    });
+    return products;
+  }
 }

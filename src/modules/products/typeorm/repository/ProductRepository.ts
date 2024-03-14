@@ -7,7 +7,7 @@ import {
   Repository,
   getRepository,
 } from 'typeorm';
-import Product from '../entities/Product';
+import Product, { InReviewEnum, publishedEnum } from '../entities/Product';
 import iProductListResponse from '../../interfaces/ProductListResponse';
 import iShowProductResponse from '../../interfaces/ShowProductResponse';
 import IMyProductsResponse from '../../interfaces/MyProductsResponse';
@@ -176,6 +176,42 @@ class ProductRepository extends Repository<Product> {
       .where({
         in_review: 0,
         published: 1,
+      })
+      .orderBy('product.created_at', 'DESC')
+      .getMany();
+    return products;
+  }
+
+  public async findProductsInReview(): Promise<any[] | undefined> {
+    const products = await getRepository(Product)
+      .createQueryBuilder('product')
+      .select([
+        'product.id',
+        'product.title',
+        'product.url',
+        'product.avatar',
+        'product.price',
+        'product.description',
+        'product.classification',
+        'product.created_at',
+        'product.stars as classification',
+      ])
+      .leftJoin('product.store', 'store')
+      .leftJoin('product.user', 'user')
+      .leftJoin('product.category', 'category')
+      .leftJoin('product.comments', 'comments')
+      .addSelect([
+        'store.id',
+        'store.title',
+        'user.id',
+        'user.name',
+        'category.id',
+        'category.title',
+        'comments.id',
+      ])
+      .where({
+        in_review: InReviewEnum.Option2,
+        published: publishedEnum.Option2,
       })
       .orderBy('product.created_at', 'DESC')
       .getMany();

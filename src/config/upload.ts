@@ -159,7 +159,7 @@ export default {
   product_storage: multer({ storage: product_storage }),
   uploadFromUrlImage: async (url: string) => {
     const browser = await puppeteer.launch({
-      // headless: 'new',
+      headless: 'new',
       // executablePath: '/usr/bin/chromium-browser',
       // args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
@@ -174,7 +174,14 @@ export default {
 
     await page.goto(url);
     await page.setViewport({ width: 1080, height: 1024 });
-    const buffer = await page.screenshot({ fullPage: true });
+    //const buffer = await page.screenshot({ fullPage: true });
+
+    // Selecione o elemento que contém a imagem
+    const elementoImagem = await page.$('img');
+
+    // Tire uma screenshot apenas do conteúdo do elemento
+    const buffer = await elementoImagem?.screenshot();
+
     await browser.close();
 
     //const timestamp = Date.now();
@@ -184,14 +191,15 @@ export default {
 
     const avatarFileName = `${imageName}`;
 
-    const productAvatarFilePath = path.join(uploadFolder, avatarFileName);
+    const productsFolder = path.join(uploadFolder, 'products');
+    const convertedImagePath = path.join(productsFolder, avatarFileName);
 
     try {
       // Verifica se o arquivo do avatar do produto já existe
-      await fs.promises.access(productAvatarFilePath);
+      await fs.promises.access(convertedImagePath);
 
       // Remove o arquivo existente
-      await fs.promises.unlink(productAvatarFilePath);
+      await fs.promises.unlink(convertedImagePath);
     } catch (error) {
       logger.error(error);
 
@@ -199,10 +207,11 @@ export default {
     }
     // Comprime a imagem para reduzir o tamanho
     const compressedBuffer = await sharp(buffer)
+      .resize(200, 200)
       .jpeg({ quality: 80 }) // Ajuste a qualidade conforme necessário
       .toBuffer();
     // Salva o novo arquivo do avatar do produto
-    await fs.promises.writeFile(productAvatarFilePath, compressedBuffer);
+    await fs.promises.writeFile(convertedImagePath, compressedBuffer);
 
     console.log('Download e remoção de arquivo concluídos com sucesso!');
     return avatarFileName;

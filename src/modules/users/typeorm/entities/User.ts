@@ -9,6 +9,11 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+export enum isAdminEnum {
+  Option1 = 'no',
+  Option2 = 'yes',
+}
+
 @Entity('users')
 class User {
   @PrimaryGeneratedColumn('uuid')
@@ -25,6 +30,13 @@ class User {
 
   @Column()
   avatar: string;
+
+  @Column({
+    type: 'enum',
+    enum: isAdminEnum,
+    default: isAdminEnum.Option1,
+  })
+  is_admin: isAdminEnum;
 
   @CreateDateColumn()
   created_at: Date;

@@ -4,6 +4,7 @@ import Joi from 'joi';
 import isAuthenticated from '../../../shared/http/middlewares/isAuthenticated';
 import ProductControlller from '../controllers/ProductController';
 import upload from '@config/upload';
+import isAuthenticatedAdmin from '../../../shared/http/middlewares/isAuthenticatedAdmin';
 
 const productController = new ProductControlller();
 const productRouter = Router();
@@ -31,6 +32,12 @@ productRouter.get('/news', productController.listNews);
 productRouter.get('/search', productController.searchProducts);
 
 productRouter.get(
+  '/in_review',
+  isAuthenticatedAdmin,
+  productController.listInReview,
+);
+
+productRouter.get(
   '/show/me',
   isAuthenticated,
   productController.showMyProducts,
@@ -42,6 +49,7 @@ productRouter.put(
   productController.updateClassification,
 );
 productRouter.get('/:id', productController.showProduct);
+
 productRouter.put(
   '/:id',
   isAuthenticated,

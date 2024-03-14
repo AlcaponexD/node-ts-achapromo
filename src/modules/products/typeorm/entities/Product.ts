@@ -48,6 +48,9 @@ class Product {
   store_id: string;
 
   @Column()
+  stars: number;
+
+  @Column()
   classification: number;
 
   @OneToOne(() => User, { cascade: true })

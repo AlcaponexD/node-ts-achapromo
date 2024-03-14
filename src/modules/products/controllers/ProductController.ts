@@ -53,6 +53,15 @@ export default class ProductControlller {
     return response.json(products);
   }
 
+  public async listInReview(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const productService = new ListProductService();
+    const products = await productService.productInReview();
+    return response.json(products);
+  }
+
   public async showProduct(
     request: Request,
     response: Response,
