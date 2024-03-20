@@ -4,6 +4,10 @@ import iProductRecommendResponse from '../interfaces/ProductListResponse';
 import iShowProductResponse from '../interfaces/ShowProductResponse';
 import AppError from '@shared/errors/AppError';
 import iProductSearchListResponse from '../interfaces/SearchProductResponse';
+import Product, {
+  InReviewEnum,
+  publishedEnum,
+} from '../typeorm/entities/Product';
 
 export default class ListProductService {
   public async recommends(): Promise<iProductRecommendResponse[] | undefined> {
@@ -105,5 +109,21 @@ export default class ListProductService {
         process.env.URL_APP + '/files/products/' + product.avatar;
     });
     return products;
+  }
+
+  public async moderateProduct(id: string, action: string): Promise<any> {
+    const productRepository = getCustomRepository(ProductRepository);
+    const product = await productRepository.findOneOrFail(id);
+    if (!product) {
+      throw new AppError('Produto não encontrado', 404);
+    }
+
+    if (action == 'approved') {
+      product.in_review = InReviewEnum.Option1;
+    } else {
+      product.published = publishedEnum.Option1;
+    }
+    await productRepository.save(product);
+    return product;
   }
 }

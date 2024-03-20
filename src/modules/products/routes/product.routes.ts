@@ -37,6 +37,12 @@ productRouter.get(
   productController.listInReview,
 );
 
+productRouter.post(
+  '/in_review/moderate',
+  isAuthenticatedAdmin,
+  productController.moderateProduct,
+);
+
 productRouter.get(
   '/show/me',
   isAuthenticated,

@@ -62,6 +62,17 @@ export default class ProductControlller {
     return response.json(products);
   }
 
+  public async moderateProduct(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const productService = new ListProductService();
+
+    const { id, action } = request.body;
+
+    const products = await productService.moderateProduct(id, action);
+    return response.json(products);
+  }
   public async showProduct(
     request: Request,
     response: Response,
