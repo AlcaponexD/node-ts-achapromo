@@ -106,6 +106,7 @@ export default class ProductControlller {
     const product = await productService.execute(
       request.body,
       request.params.id,
+      request.user.id,
     );
 
     return response.json(product);
