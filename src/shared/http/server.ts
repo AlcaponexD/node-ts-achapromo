@@ -36,10 +36,10 @@ app.use(errors());
 //AppError
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   if (error instanceof AppError) {
-    logger.error({
-      status: 'error',
-      message: error.message,
-    });
+    // logger.error({
+    //   status: 'error',
+    //   message: error.message,
+    // });
 
     return res.status(error.statusCode).json({
       status: error.statusCode,
@@ -48,11 +48,11 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   }
 
   const stack = new Error().stack;
-  logger.error({
-    status: 'error',
-    message: error.message,
-    stack: stack,
-  });
+  // logger.error({
+  //   status: 'error',
+  //   message: error.message,
+  //   stack: stack,
+  // });
 
   return res.status(500).json({
     status: 'error',

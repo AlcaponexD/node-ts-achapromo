@@ -1,8 +1,8 @@
 import { getCustomRepository, getRepository } from 'typeorm';
 import CategoryRepository from '../repository/CategoryRepository';
 import { Category, publishedEnum } from '../typeorm/entities/Category';
-import Product from '@modules/products/typeorm/entities/Product';
-import iShowProductResponse from '@modules/products/interfaces/ShowProductResponse';
+import Product from '../../products/typeorm/entities/Product';
+import iShowProductResponse from '../../products/interfaces/ShowProductResponse';
 
 interface ShowCategoryProductResponse {
   category: Category;

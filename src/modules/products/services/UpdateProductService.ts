@@ -2,9 +2,7 @@ import { getCustomRepository } from 'typeorm';
 import ProductRepository from '../typeorm/repository/ProductRepository';
 import AppError from '@shared/errors/AppError';
 import CreateProductService from './CreateProductService';
-import Product from '../typeorm/entities/Product';
-import { count } from 'console';
-import UsersRepository from '@modules/users/typeorm/repositories/UsersRepository';
+import UsersRepository from '../../users/typeorm/repositories/UsersRepository';
 import iShowProductResponse from '../interfaces/ShowProductResponse';
 
 interface IDataUpdate {

@@ -5,8 +5,8 @@ import ListProductService from '../services/ListProductsService';
 import UsersRepository from '../../users/typeorm/repositories/UsersRepository';
 import UpdateProductService from '../services/UpdateProductService';
 import UpdateAvatarProductServce from '../services/UpdateAvatarProductService';
-import StarService from '@modules/stars/services/StarService';
-import AppError from '@shared/errors/AppError';
+import StarService from '../../stars/services/StarService';
+import AppError from '../../../shared/errors/AppError';
 
 export default class ProductControlller {
   public async create(request: Request, response: Response): Promise<Response> {
