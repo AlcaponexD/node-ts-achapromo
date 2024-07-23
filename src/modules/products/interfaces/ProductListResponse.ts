@@ -2,6 +2,13 @@ interface comments {
   id: string;
 }
 
+interface histories {
+  id: number;
+  price: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
 export default interface iProductListResponse {
   id: string;
   title: string;
@@ -24,4 +31,5 @@ export default interface iProductListResponse {
     title: string;
   };
   comments: comments[];
+  histories: histories[];
 }

@@ -89,6 +89,7 @@ export default class ListProductService {
         return comment;
       });
     }
+
     return product;
   }
   public async productByUserLogged(id: string): Promise<any[] | undefined> {

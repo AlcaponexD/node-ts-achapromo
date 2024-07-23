@@ -277,6 +277,7 @@ class ProductRepository extends Repository<Product> {
       .leftJoin('product.category', 'category')
       .leftJoin('product.comments', 'comments')
       .leftJoin('comments.user', 'comments_user')
+      .leftJoin('product.history', 'histories')
       .addSelect([
         'store.id',
         'store.title',
@@ -291,6 +292,10 @@ class ProductRepository extends Repository<Product> {
         'comments_user.name',
         'comments_user.id',
         'comments_user.avatar',
+        'histories.id',
+        'histories.price',
+        'histories.created_at',
+        'histories.updated_at',
       ])
       .where({
         id,

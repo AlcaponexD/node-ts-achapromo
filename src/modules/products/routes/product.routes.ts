@@ -74,7 +74,6 @@ productRouter.patch(
   '/avatar/:id',
   isAuthenticated,
   upload.product_storage.single('avatar'),
-  upload.resizeProductImage,
   productController.updateAvatar,
 );
 

@@ -13,6 +13,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import ProductHistory from './ProductHistory';
 
 export enum publishedEnum {
   Option1 = '0',
@@ -68,6 +69,10 @@ class Product {
   @OneToMany(() => Comment, comment => comment.product)
   @JoinColumn()
   comments: Comment[];
+
+  @OneToMany(() => ProductHistory, productHistory => productHistory.product)
+  @JoinColumn()
+  history: ProductHistory[];
 
   @Column({
     type: 'enum',

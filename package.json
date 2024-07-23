@@ -57,7 +57,6 @@
     "pg": "^8.8.0",
     "puppeteer": "^20.4.0",
     "reflect-metadata": "^0.1.13",
-    "sharp": "^0.32.6",
     "typeorm": "0.2.29",
     "winston": "^3.11.0"
   }

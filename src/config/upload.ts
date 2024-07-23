@@ -1,13 +1,12 @@
 import multer from 'multer';
 import path from 'path';
-import cryto from 'crypto';
 import fs from 'fs';
-import sharp from 'sharp';
 import puppeteer from 'puppeteer';
 import { Request, Response, NextFunction } from 'express';
 import logger from '../../logger';
 
 const uploadFolder = path.resolve(__dirname, '..', '..', 'uploads');
+
 const uploadFolderProduct = path.resolve(
   __dirname,
   '..',
@@ -18,6 +17,17 @@ const uploadFolderProduct = path.resolve(
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    const dt = new Date();
+    const fullFileName = `${dt.getTime()} ${path.extname(file.originalname)}`;
+    cb(null, fullFileName);
+  },
+});
+
+const avatarStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/avatar');
   },
   filename: function (req, file, cb) {
     const dt = new Date();
@@ -70,14 +80,14 @@ const resizeProductImage = async (
 
     logger.error({ message: 'Antes da operação sharp' });
 
-    try {
-      await sharp(originalImagePath)
-        .resize(300, 300)
-        .toFile(convertedImagePath);
-    } catch (error) {
-      logger.error(error);
-      return next(error);
-    }
+    // try {
+    //   await sharp(originalImagePath)
+    //     .resize(300, 300)
+    //     .toFile(convertedImagePath);
+    // } catch (error) {
+    //   logger.error(error);
+    //   return next(error);
+    // }
 
     logger.error({ message: 'Após a operação sharp' });
 
@@ -101,61 +111,11 @@ const resizeProductImage = async (
   }
 };
 
-const resizeAvatarImage = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const uploadedFile = req.file;
-
-    if (!uploadedFile) {
-      return res.status(400).json({
-        error: true,
-        message: 'Nenhuma imagem foi enviada.',
-      });
-    }
-
-    const originalImagePath = uploadedFile.path;
-    const dt = new Date();
-    const originalImageName = `avatar-thumb-${dt.getTime()}${path.extname(
-      uploadedFile.originalname,
-    )}`;
-
-    const convertedImagePath = path.join(
-      __dirname,
-      'uploads',
-      'products',
-      originalImageName,
-    );
-
-    sharp(originalImagePath)
-      .resize(300, 300)
-      .toFile(`uploads/avatar/${originalImageName}`, err => {
-        if (err) {
-          logger.error(err);
-          return next(err);
-        }
-
-        uploadedFile.path = convertedImagePath;
-        try {
-          fs.unlinkSync(originalImagePath);
-        } catch (e) {
-          logger.error(e);
-          console.log(`Error unlink image > ${originalImagePath}`);
-        }
-
-        if (req.file) {
-          req.file.filename = originalImageName;
-        }
-
-        next();
-      });
-  } catch (error) {
-    logger.error(error);
-  }
-};
-
 export default {
   directory: uploadFolder,
   directoryProduct: uploadFolderProduct,
   storage: multer({ storage }),
+  avatar_storage: multer({ storage: avatarStorage }),
   product_storage: multer({ storage: product_storage }),
   uploadFromUrlImage: async (url: string) => {
     const browser = await puppeteer.launch({
@@ -206,16 +166,15 @@ export default {
       // O arquivo do avatar do produto não existe
     }
     // Comprime a imagem para reduzir o tamanho
-    const compressedBuffer = await sharp(buffer)
-      .resize(200, 200)
-      .jpeg({ quality: 80 }) // Ajuste a qualidade conforme necessário
-      .toBuffer();
-    // Salva o novo arquivo do avatar do produto
-    await fs.promises.writeFile(convertedImagePath, compressedBuffer);
+    // const compressedBuffer = await sharp(buffer)
+    //   .resize(200, 200)
+    //   .jpeg({ quality: 80 }) // Ajuste a qualidade conforme necessário
+    //   .toBuffer();
+    // // Salva o novo arquivo do avatar do produto
+    // await fs.promises.writeFile(convertedImagePath, compressedBuffer);
 
     console.log('Download e remoção de arquivo concluídos com sucesso!');
     return avatarFileName;
   },
   resizeProductImage: resizeProductImage,
-  resizeAvatarImage: resizeAvatarImage,
 };
