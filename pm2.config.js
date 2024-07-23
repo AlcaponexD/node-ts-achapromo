@@ -4,7 +4,7 @@ module.exports = {
       name: 'AchaPromoAPI',
       script: 'dist/shared/http/server.js',
       user: 'ubuntu',
-      watch: true,
+      watch: false,
       max_memory_restart: '24G',
       //Agora vai
     },
