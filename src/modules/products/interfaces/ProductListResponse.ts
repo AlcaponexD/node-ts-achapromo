@@ -31,5 +31,5 @@ export default interface iProductListResponse {
     title: string;
   };
   comments: comments[];
-  histories: histories[];
+  histories?: histories[];
 }

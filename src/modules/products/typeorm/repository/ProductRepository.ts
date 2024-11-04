@@ -300,6 +300,7 @@ class ProductRepository extends Repository<Product> {
       .where({
         id,
       })
+      .orderBy('histories.created_at', 'ASC')
       .getOneOrFail();
     return product;
   }
