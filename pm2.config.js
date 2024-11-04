@@ -6,7 +6,7 @@ module.exports = {
       user: 'ubuntu',
       watch: false,
       max_memory_restart: '24G',
-      //Agora vai
+      env_file: '.env',  // Especifica o arquivo .env existente
     },
   ],
 };
