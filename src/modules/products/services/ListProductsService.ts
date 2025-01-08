@@ -14,10 +14,6 @@ export default class ListProductService {
     const productRepository = getCustomRepository(ProductRepository);
     const _products = await productRepository.findRecommends();
     const products = _products?.map(product => {
-      if (product.avatar) {
-        product.avatar =
-          process.env.URL_APP + '/files/products/' + product.avatar;
-      }
       return product;
     });
     return products;
@@ -31,10 +27,6 @@ export default class ListProductService {
       throw new AppError('Nenhum resultado encontrado', 404);
     }
     const products = results.products?.map(product => {
-      if (product.avatar) {
-        product.avatar =
-          process.env.URL_APP + '/files/products/' + product.avatar;
-      }
       return product;
     });
     return {
@@ -48,10 +40,6 @@ export default class ListProductService {
     const productRepository = getCustomRepository(ProductRepository);
     const top = await productRepository.findTops();
     const products = top?.map(product => {
-      if (product.avatar) {
-        product.avatar =
-          process.env.URL_APP + '/files/products/' + product.avatar;
-      }
       return product;
     });
     return products;
@@ -60,10 +48,6 @@ export default class ListProductService {
     const productRepository = getCustomRepository(ProductRepository);
     const top = await productRepository.findNews();
     const products = top?.map(product => {
-      if (product.avatar) {
-        product.avatar =
-          process.env.URL_APP + '/files/products/' + product.avatar;
-      }
       return product;
     });
     return products;
@@ -75,8 +59,7 @@ export default class ListProductService {
     const productRepository = getCustomRepository(ProductRepository);
     const product = await productRepository.findProductById(id);
     if (product) {
-      product.avatar =
-        process.env.URL_APP + '/files/products/' + product.avatar;
+      product.avatar = product.avatar;
       if (product.user.avatar) {
         product.user.avatar =
           process.env.URL_APP + '/files/avatar/' + product.user.avatar;
@@ -96,8 +79,7 @@ export default class ListProductService {
     const productRepository = getCustomRepository(ProductRepository);
     const products = await productRepository.findMyProductsSended(id);
     products?.map(product => {
-      product.avatar =
-        process.env.URL_APP + '/files/products/' + product.avatar;
+      product.avatar = product.avatar;
     });
     return products;
   }
@@ -106,8 +88,7 @@ export default class ListProductService {
     const productRepository = getCustomRepository(ProductRepository);
     const products = await productRepository.findProductsInReview();
     products?.map(product => {
-      product.avatar =
-        process.env.URL_APP + '/files/products/' + product.avatar;
+      product.avatar = product.avatar;
     });
     return products;
   }

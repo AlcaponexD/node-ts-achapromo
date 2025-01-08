@@ -10,6 +10,8 @@ import StoreRepository from '../../../modules/stores/typeorm/repository/StoreRep
 import AppError from '../../../shared/errors/AppError';
 import Terabyte from '../../../modules/crawlers/Terabyte';
 import { json } from 'stream/consumers';
+import ProductHistory from '../typeorm/entities/ProductHistory';
+import ProductHistoryRepository from '../typeorm/repository/ProductHistoryRepository';
 
 interface IRequest {
   url: string;
@@ -23,6 +25,11 @@ interface IRequest {
   published?: publishedEnum;
   in_review?: InReviewEnum;
   category_name: string;
+}
+
+interface IProductHistory {
+  price: number;
+  product_id: string;
 }
 
 export default class CreateProductService {
@@ -96,7 +103,7 @@ export default class CreateProductService {
       throw new AppError('Loja não encontrada', 404);
     }
     //Mock pra loja
-    const dataProductCrawler = await this.processProduct(storeName, data.url);
+    const dataProductCrawler = {}; //await this.processProduct(storeName, data.url);
     const jsonFinal = Object.assign({}, data, dataProductCrawler);
     if (
       !jsonFinal.title &&
@@ -111,6 +118,24 @@ export default class CreateProductService {
 
     //Get Category
     jsonFinal.category = await this.getCategory(jsonFinal.category_name);
+
+    //Get product by url
+    const productExists = await productRepository.findByUrl(data.url);
+
+    if (productExists && data.price) {
+      //Verifica se cria ou atualiza o preço do mesmo na tabela de histórico
+      const productHistoryRepository = getCustomRepository(
+        ProductHistoryRepository,
+      );
+      const jsonHistory: IProductHistory = {
+        product_id: productExists.id,
+        price: data.price,
+      };
+
+      const history = productHistoryRepository.create(jsonHistory);
+      await productHistoryRepository.save(history);
+      return productExists;
+    }
 
     const product = productRepository.create(jsonFinal);
     await productRepository.save(product);

@@ -10,6 +10,8 @@ export default class ResetPasswordController {
       token,
       password,
     });
-    return response.status(204).json();
+    return response.status(200).json({
+      message: 'Password changed successfully',
+    });
   }
 }

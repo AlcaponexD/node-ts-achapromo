@@ -72,7 +72,9 @@ export default class UserController {
       password,
     });
 
-    return response.json(user);
+    return response.status(200).json({
+      message: 'User registered successfully',
+    });
   }
 
   public async update(request: Request, response: Response): Promise<Response> {
