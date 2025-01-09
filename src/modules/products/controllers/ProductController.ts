@@ -30,8 +30,15 @@ export default class ProductControlller {
     request: Request,
     response: Response,
   ): Promise<Response> {
+    // Captura os query parameters
+    const { page, per_page } = request.query;
+
+    // Converte os valores para números (caso sejam strings)
+    const pageNumber = page ? parseInt(page as string, 10) : 1;
+    const perPageNumber = per_page ? parseInt(per_page as string, 10) : 10;
+
     const productService = new ListProductService();
-    const products = await productService.recommends();
+    const products = await productService.recommends(pageNumber, perPageNumber);
     return response.json(products);
   }
 

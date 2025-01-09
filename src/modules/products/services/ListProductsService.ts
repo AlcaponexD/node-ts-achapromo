@@ -8,15 +8,16 @@ import Product, {
   InReviewEnum,
   publishedEnum,
 } from '../typeorm/entities/Product';
+import { number } from 'joi';
 
 export default class ListProductService {
-  public async recommends(): Promise<iProductRecommendResponse[] | undefined> {
+  public async recommends(
+    page: number,
+    per_page: number,
+  ): Promise<iProductRecommendResponse[] | undefined> {
     const productRepository = getCustomRepository(ProductRepository);
-    const _products = await productRepository.findRecommends();
-    const products = _products?.map(product => {
-      return product;
-    });
-    return products;
+    const _products = await productRepository.findRecommends(page, per_page);
+    return _products;
   }
 
   //TODO Implements search https://stackoverflow.com/questions/53922503/how-to-implement-pagination-in-nestjs-with-typeorm

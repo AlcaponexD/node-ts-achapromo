@@ -12,6 +12,13 @@ import iProductListResponse from '../../interfaces/ProductListResponse';
 import iShowProductResponse from '../../interfaces/ShowProductResponse';
 import IMyProductsResponse from '../../interfaces/MyProductsResponse';
 import iProductSearchListResponse from '../../interfaces/SearchProductResponse';
+import iProductRecommendResponse from '../../interfaces/MyProductsResponse';
+
+interface IListResponse {
+  products: iProductListResponse[];
+  total: number;
+  next_page: boolean;
+}
 
 @EntityRepository(Product)
 class ProductRepository extends Repository<Product> {
@@ -24,8 +31,11 @@ class ProductRepository extends Repository<Product> {
 
     return product;
   }
-  public async findRecommends(): Promise<iProductListResponse[] | undefined> {
-    const products = await getRepository(Product)
+  public async findRecommends(
+    page: number,
+    perPage: number,
+  ): Promise<IListResponse | undefined> {
+    const [products, total] = await getRepository(Product)
       .createQueryBuilder('product')
       .select([
         'product.id',
@@ -55,8 +65,19 @@ class ProductRepository extends Repository<Product> {
         in_review: 0,
         published: 1,
       })
-      .getMany();
-    return products;
+      .orderBy('product.created_at', 'DESC') // Ordenação padrão
+      .take(perPage) // Limita o número de registros por página
+      .skip((page - 1) * perPage) // Pula os registros das páginas anteriores
+      .getManyAndCount(); // Obtém os registros e o total de registros
+
+    const totalPages = Math.ceil(total / perPage); // Calcula o total de páginas
+    const nextPage = page < totalPages; // Verifica se há uma próxima página
+
+    return {
+      products: products,
+      total: totalPages,
+      next_page: nextPage,
+    };
   }
 
   public async searchProducts(
