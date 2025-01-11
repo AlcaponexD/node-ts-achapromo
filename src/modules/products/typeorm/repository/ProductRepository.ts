@@ -38,7 +38,7 @@ class ProductRepository extends Repository<Product> {
   public async findRecommends(
     page: number,
     perPage: number,
-  ): Promise<any[] | undefined> {
+  ): Promise<any | undefined> {
     const [products, total] = await getRepository(Product)
       .createQueryBuilder('product')
       .select([
@@ -69,7 +69,7 @@ class ProductRepository extends Repository<Product> {
         in_review: 0,
         published: 1,
       })
-      .orderBy('product.created_at', 'DESC') // Ordenação padrão
+      .orderBy('classification', 'DESC') // Randomiza os resultados
       .take(perPage) // Limita o número de registros por página
       .skip((page - 1) * perPage) // Pula os registros das páginas anteriores
       .getManyAndCount(); // Obtém os registros e o total de registros
@@ -240,7 +240,7 @@ class ProductRepository extends Repository<Product> {
   public async findNews(
     page: number,
     perPage: number,
-  ): Promise<any[] | undefined> {
+  ): Promise<any | undefined> {
     const [products, total] = await getRepository(Product)
       .createQueryBuilder('product')
       .select([
@@ -284,7 +284,6 @@ class ProductRepository extends Repository<Product> {
       total: totalPages,
       next_page: nextPage,
     };
-    return products;
   }
   public async findProductsInReview(): Promise<any[] | undefined> {
     const products = await getRepository(Product)
