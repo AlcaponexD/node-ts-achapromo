@@ -50,7 +50,6 @@ class ProductRepository extends Repository<Product> {
         'product.description',
         'product.classification',
         'product.created_at',
-        'product.stars as classification',
       ])
       .leftJoin('product.store', 'store')
       .leftJoin('product.user', 'user')
@@ -68,8 +67,9 @@ class ProductRepository extends Repository<Product> {
       .where({
         in_review: 0,
         published: 1,
+        classification: Not(IsNull()),
       })
-      .orderBy('classification', 'DESC') // Randomiza os resultados
+      .orderBy('product.classification', 'DESC') // Randomiza os resultados
       .take(perPage) // Limita o número de registros por página
       .skip((page - 1) * perPage) // Pula os registros das páginas anteriores
       .getManyAndCount(); // Obtém os registros e o total de registros
@@ -159,7 +159,6 @@ class ProductRepository extends Repository<Product> {
         'users.name AS user_name',
         'category.id AS category_id',
         'category.title AS category_title',
-        'product.stars AS classification',
       ])
       .innerJoin('product.store', 'store')
       .innerJoin('product.user', 'users')
@@ -252,7 +251,6 @@ class ProductRepository extends Repository<Product> {
         'product.description',
         'product.classification',
         'product.created_at',
-        'product.stars as classification',
       ])
       .leftJoin('product.store', 'store')
       .leftJoin('product.user', 'user')
