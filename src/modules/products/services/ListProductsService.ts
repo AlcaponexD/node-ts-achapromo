@@ -27,9 +27,11 @@ export default class ListProductService {
     if (!results) {
       throw new AppError('Nenhum resultado encontrado', 404);
     }
+
     const products = results.products?.map(product => {
       return product;
     });
+
     return {
       products: products,
       total: results.total,
@@ -37,20 +39,14 @@ export default class ListProductService {
     };
   }
 
-  public async topProducts() {
+  public async topProducts(page, perPage) {
     const productRepository = getCustomRepository(ProductRepository);
-    const top = await productRepository.findTops();
-    const products = top?.map(product => {
-      return product;
-    });
-    return products;
+    const top = await productRepository.findTops(page, perPage);
+    return top;
   }
-  public async newsProducts() {
+  public async newsProducts(page, perPage) {
     const productRepository = getCustomRepository(ProductRepository);
-    const top = await productRepository.findNews();
-    const products = top?.map(product => {
-      return product;
-    });
+    const products = await productRepository.findNews(page, perPage);
     return products;
   }
 

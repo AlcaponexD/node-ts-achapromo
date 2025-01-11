@@ -12,6 +12,17 @@ class CommentRepository extends Repository<Comment> {
 
     return comments;
   }
+
+  public async findByProductId(id: string): Promise<Comment[]> {
+    const comments = await this.find({
+      select: ['id'],
+      where: {
+        product_id: id,
+      },
+    });
+
+    return comments;
+  }
 }
 
 export default CommentRepository;

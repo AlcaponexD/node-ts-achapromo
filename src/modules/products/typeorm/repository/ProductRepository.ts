@@ -5,6 +5,7 @@ import {
   Like,
   Not,
   Repository,
+  SelectQueryBuilder,
   getRepository,
 } from 'typeorm';
 import Product, { InReviewEnum, publishedEnum } from '../entities/Product';
@@ -13,6 +14,9 @@ import iShowProductResponse from '../../interfaces/ShowProductResponse';
 import IMyProductsResponse from '../../interfaces/MyProductsResponse';
 import iProductSearchListResponse from '../../interfaces/SearchProductResponse';
 import iProductRecommendResponse from '../../interfaces/MyProductsResponse';
+import ProductHistory from '../entities/ProductHistory';
+import Comment from '@modules/comments/typeorm/entities/Comment';
+import { title } from 'process';
 
 interface IListResponse {
   products: iProductListResponse[];
@@ -34,7 +38,7 @@ class ProductRepository extends Repository<Product> {
   public async findRecommends(
     page: number,
     perPage: number,
-  ): Promise<IListResponse | undefined> {
+  ): Promise<any[] | undefined> {
     const [products, total] = await getRepository(Product)
       .createQueryBuilder('product')
       .select([
@@ -132,43 +136,112 @@ class ProductRepository extends Repository<Product> {
     };
   }
 
-  public async findTops(): Promise<any[] | undefined> {
-    const products = await getRepository(Product)
+  public async findTops(
+    page: number,
+    perPage: number,
+  ): Promise<any | undefined> {
+    page = page || 1;
+    perPage = perPage || 10;
+    const queryBuilder = getRepository(Product)
       .createQueryBuilder('product')
       .select([
-        'product.id',
-        'product.title',
-        'product.url',
-        'product.avatar',
-        'product.price',
-        'product.description',
-        'product.classification',
-        'product.created_at',
+        'product.id AS id',
+        'product.title AS title',
+        'product.url AS url',
+        'product.avatar AS avatar',
+        'product.price AS price',
+        'product.description AS description',
+        'product.classification AS classification',
+        'product.created_at AS created_at',
+        'store.id AS store_id',
+        'store.title AS store_title',
+        'users.id AS user_id',
+        'users.name AS user_name',
+        'category.id AS category_id',
+        'category.title AS category_title',
+        'product.stars AS classification',
       ])
-      .leftJoin('product.store', 'store')
-      .leftJoin('product.user', 'user')
-      .leftJoin('product.category', 'category')
-      .leftJoin('product.comments', 'comments')
-      .addSelect([
-        'store.id',
-        'store.title',
-        'user.id',
-        'user.name',
-        'category.id',
-        'category.title',
-        'comments.id',
-      ])
-      .where({
-        in_review: 0,
-        published: 1,
-        classification: Not(IsNull()),
+      .innerJoin('product.store', 'store')
+      .innerJoin('product.user', 'users')
+      .innerJoin('product.category', 'category')
+      .addSelect(subQuery => {
+        return subQuery
+          .select('ph.price')
+          .from(ProductHistory, 'ph')
+          .where('ph.product_id = product.id')
+          .andWhere('product.price < ph.price')
+          .orderBy('ph.created_at', 'ASC')
+          .limit(1);
+      }, 'history_price') // Renomeado para 'history_price'
+      .addSelect(subQuery => {
+        return subQuery
+          .select(
+            `((ph.price::float - product.price::float) / ph.price::float) * 100`, // Usando ponto flutuante explicitamente
+          )
+          .from(ProductHistory, 'ph')
+          .where('ph.product_id = product.id')
+          .andWhere('product.price < ph.price')
+          .orderBy('ph.created_at', 'ASC')
+          .limit(1);
+      }, 'discount_percentage') // Campo calculado para o desconto em %
+      .where(qb => {
+        const subQuery = qb
+          .subQuery()
+          .select('ph.price')
+          .from(ProductHistory, 'ph')
+          .where('ph.product_id = product.id')
+          .andWhere('product.price < ph.price')
+          .orderBy('ph.created_at', 'ASC')
+          .limit(1)
+          .getQuery();
+        return `EXISTS (${subQuery})`;
       })
-      .orderBy('product.classification', 'DESC')
-      .getMany();
-    return products;
+      .orderBy('discount_percentage', 'DESC') // Ordena pelo desconto em %
+      .addOrderBy('product.created_at', 'DESC') // Adiciona a ordem de criação como critério secundário
+      .offset((page - 1) * perPage)
+      .limit(perPage);
+    // Executando e obtendo os resultados
+    const products = await queryBuilder.getRawMany();
+    const total = await queryBuilder.getCount();
+
+    const totalPages = Math.ceil(total / perPage); // Calcula o total de páginas
+    const nextPage = page < totalPages; // Verifica se há uma próxima página
+    const results = products.map(product => ({
+      id: product.id,
+      title: product.title,
+      url: product.url,
+      avatar: product.avatar,
+      price: product.price,
+      discount_percentage: product.discount_percentage,
+      description: product.description,
+      classification: product.classification,
+      created_at: product.created_at,
+      store: {
+        id: product.store_id,
+        title: product.store_title,
+      },
+      user: {
+        id: product.user_id,
+        name: product.user_name,
+      },
+      category: {
+        id: product.category_id,
+        title: product.category_title,
+      },
+    }));
+
+    return {
+      products: results,
+      total: totalPages,
+      next_page: nextPage,
+    };
   }
-  public async findNews(): Promise<any[] | undefined> {
-    const products = await getRepository(Product)
+
+  public async findNews(
+    page: number,
+    perPage: number,
+  ): Promise<any[] | undefined> {
+    const [products, total] = await getRepository(Product)
       .createQueryBuilder('product')
       .select([
         'product.id',
@@ -199,10 +272,20 @@ class ProductRepository extends Repository<Product> {
         published: 1,
       })
       .orderBy('product.created_at', 'DESC')
-      .getMany();
+      .take(perPage) // Limita o número de registros por página
+      .skip((page - 1) * perPage) // Pula os registros das páginas anteriores
+      .getManyAndCount(); // Obtém os registros e o total de registros
+
+    const totalPages = Math.ceil(total / perPage); // Calcula o total de páginas
+    const nextPage = page < totalPages; // Verifica se há uma próxima página
+
+    return {
+      products: products,
+      total: totalPages,
+      next_page: nextPage,
+    };
     return products;
   }
-
   public async findProductsInReview(): Promise<any[] | undefined> {
     const products = await getRepository(Product)
       .createQueryBuilder('product')

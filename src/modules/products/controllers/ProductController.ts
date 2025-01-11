@@ -7,6 +7,8 @@ import UpdateProductService from '../services/UpdateProductService';
 import UpdateAvatarProductServce from '../services/UpdateAvatarProductService';
 import StarService from '../../stars/services/StarService';
 import AppError from '../../../shared/errors/AppError';
+import ListCommentsService from '@modules/comments/services/ListCommentsService';
+import Comment from '@modules/comments/typeorm/entities/Comment';
 
 export default class ProductControlller {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -46,17 +48,41 @@ export default class ProductControlller {
     request: Request,
     response: Response,
   ): Promise<Response> {
+    const { page, per_page } = request.query;
+
+    // Converte os valores para números (caso sejam strings)
+    const pageNumber = page ? parseInt(page as string, 10) : 1;
+    const perPageNumber = per_page ? parseInt(per_page as string, 10) : 10;
     const productService = new ListProductService();
-    const products = await productService.topProducts();
-    return response.json(products);
+
+    const results = await productService.topProducts(pageNumber, perPageNumber);
+
+    for (const i in results.products) {
+      const listCommentsService = new ListCommentsService();
+      const comments = await listCommentsService.findByProductId(
+        results.products[i].id,
+      );
+      results.products[i].comments = comments;
+    }
+
+    return response.json(results);
   }
 
   public async listNews(
     request: Request,
     response: Response,
   ): Promise<Response> {
+    const { page, per_page } = request.query;
+
+    // Converte os valores para números (caso sejam strings)
+    const pageNumber = page ? parseInt(page as string, 10) : 1;
+    const perPageNumber = per_page ? parseInt(per_page as string, 10) : 10;
+
     const productService = new ListProductService();
-    const products = await productService.newsProducts();
+    const products = await productService.newsProducts(
+      pageNumber,
+      perPageNumber,
+    );
     return response.json(products);
   }
 
