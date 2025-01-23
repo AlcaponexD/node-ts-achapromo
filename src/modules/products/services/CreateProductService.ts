@@ -114,6 +114,11 @@ export default class CreateProductService {
       throw new AppError('Preencha manualmente o novo produto', 422);
     }
 
+    //Nao deixa preço menor que 1
+    if (jsonFinal.price && jsonFinal.price < 1) {
+      throw new AppError('Preço inválido', 422);
+    }
+
     jsonFinal.store = store;
 
     //Get Category
