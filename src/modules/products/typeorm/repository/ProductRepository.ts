@@ -7,6 +7,7 @@ import {
   Repository,
   SelectQueryBuilder,
   getRepository,
+  MoreThanOrEqual,
 } from 'typeorm';
 import Product, { InReviewEnum, publishedEnum } from '../entities/Product';
 import iProductListResponse from '../../interfaces/ProductListResponse';
@@ -35,6 +36,7 @@ class ProductRepository extends Repository<Product> {
 
     return product;
   }
+
   public async findRecommends(
     page: number,
     perPage: number,
@@ -69,13 +71,13 @@ class ProductRepository extends Repository<Product> {
         published: 1,
         classification: Not(IsNull()),
       })
-      .orderBy('product.classification', 'DESC') // Randomiza os resultados
-      .take(perPage) // Limita o número de registros por página
-      .skip((page - 1) * perPage) // Pula os registros das páginas anteriores
-      .getManyAndCount(); // Obtém os registros e o total de registros
+      .orderBy('product.classification', 'DESC')
+      .take(perPage)
+      .skip((page - 1) * perPage)
+      .getManyAndCount();
 
-    const totalPages = Math.ceil(total / perPage); // Calcula o total de páginas
-    const nextPage = page < totalPages; // Verifica se há uma próxima página
+    const totalPages = Math.ceil(total / perPage);
+    const nextPage = page < totalPages;
 
     return {
       products: products,
@@ -87,8 +89,8 @@ class ProductRepository extends Repository<Product> {
   public async searchProducts(
     query: any,
   ): Promise<iProductSearchListResponse | undefined> {
-    const perPage = parseInt(query.per_page) || 10; // Número padrão de registros por página
-    const page = parseInt(query.page) || 1; // Número padrão da página
+    const perPage = parseInt(query.per_page) || 10;
+    const page = parseInt(query.page) || 1;
 
     const keyword = query.search || '';
     const [products, total] = await getRepository(Product)
@@ -104,14 +106,14 @@ class ProductRepository extends Repository<Product> {
         'product.created_at',
       ])
       .leftJoin('product.store', 'store')
-      .leftJoin('product.user', 'user') // Alias 'user' para a tabela de usuários
+      .leftJoin('product.user', 'user')
       .leftJoin('product.category', 'category')
       .leftJoin('product.comments', 'comments')
       .addSelect([
         'store.id',
         'store.title',
-        'user.id', // Corrigido: use o alias 'user' para referenciar a tabela de usuários
-        'user.name', // Corrigido: use o alias 'user' para referenciar a tabela de usuários
+        'user.id',
+        'user.name',
         'category.id',
         'category.title',
         'comments.id',
@@ -171,18 +173,18 @@ class ProductRepository extends Repository<Product> {
           .andWhere('product.price < ph.price')
           .orderBy('ph.created_at', 'ASC')
           .limit(1);
-      }, 'history_price') // Renomeado para 'history_price'
+      }, 'history_price')
       .addSelect(subQuery => {
         return subQuery
           .select(
-            `((ph.price::float - product.price::float) / ph.price::float) * 100`, // Usando ponto flutuante explicitamente
+            `((ph.price::float - product.price::float) / ph.price::float) * 100`,
           )
           .from(ProductHistory, 'ph')
           .where('ph.product_id = product.id')
           .andWhere('product.price < ph.price')
           .orderBy('ph.created_at', 'ASC')
           .limit(1);
-      }, 'discount_percentage') // Campo calculado para o desconto em %
+      }, 'discount_percentage')
       .where(qb => {
         const subQuery = qb
           .subQuery()
@@ -195,16 +197,16 @@ class ProductRepository extends Repository<Product> {
           .getQuery();
         return `EXISTS (${subQuery})`;
       })
-      .orderBy('discount_percentage', 'DESC') // Ordena pelo desconto em %
-      .addOrderBy('product.created_at', 'DESC') // Adiciona a ordem de criação como critério secundário
+      .orderBy('discount_percentage', 'DESC')
+      .addOrderBy('product.created_at', 'DESC')
       .offset((page - 1) * perPage)
       .limit(perPage);
-    // Executando e obtendo os resultados
+
     const products = await queryBuilder.getRawMany();
     const total = await queryBuilder.getCount();
 
-    const totalPages = Math.ceil(total / perPage); // Calcula o total de páginas
-    const nextPage = page < totalPages; // Verifica se há uma próxima página
+    const totalPages = Math.ceil(total / perPage);
+    const nextPage = page < totalPages;
     const results = products.map(product => ({
       id: product.id,
       title: product.title,
@@ -240,6 +242,9 @@ class ProductRepository extends Repository<Product> {
     page: number,
     perPage: number,
   ): Promise<any | undefined> {
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2); // Get the date for two days ago
+
     const [products, total] = await getRepository(Product)
       .createQueryBuilder('product')
       .select([
@@ -268,14 +273,15 @@ class ProductRepository extends Repository<Product> {
       .where({
         in_review: 0,
         published: 1,
+        created_at: MoreThanOrEqual(twoDaysAgo), // Filter for records from the last two days
       })
       .orderBy('product.created_at', 'DESC')
-      .take(perPage) // Limita o número de registros por página
-      .skip((page - 1) * perPage) // Pula os registros das páginas anteriores
-      .getManyAndCount(); // Obtém os registros e o total de registros
+      .take(perPage)
+      .skip((page - 1) * perPage)
+      .getManyAndCount();
 
-    const totalPages = Math.ceil(total / perPage); // Calcula o total de páginas
-    const nextPage = page < totalPages; // Verifica se há uma próxima página
+    const totalPages = Math.ceil(total / perPage);
+    const nextPage = page < totalPages;
 
     return {
       products: products,
@@ -283,6 +289,7 @@ class ProductRepository extends Repository<Product> {
       next_page: nextPage,
     };
   }
+
   public async findProductsInReview(): Promise<any[] | undefined> {
     const products = await getRepository(Product)
       .createQueryBuilder('product')
@@ -318,6 +325,7 @@ class ProductRepository extends Repository<Product> {
       .getMany();
     return products;
   }
+
   public async findMyProductsSended(
     user_id: string,
   ): Promise<IMyProductsResponse[] | undefined> {

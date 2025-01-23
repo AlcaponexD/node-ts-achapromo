@@ -94,7 +94,7 @@ export default class CreateProductService {
     //   throw new AppError('Produto já existente');
     // }
 
-    data.published = publishedEnum.Option2;
+    data.published = publishedEnum.Option1;
     data.in_review = InReviewEnum.Option2;
 
     const store = await this.getStore(data.url);
