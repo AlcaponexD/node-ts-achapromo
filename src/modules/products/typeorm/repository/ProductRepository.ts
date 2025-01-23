@@ -197,6 +197,10 @@ class ProductRepository extends Repository<Product> {
           .getQuery();
         return `EXISTS (${subQuery})`;
       })
+      .where({
+        in_review: 0,
+        published: 1,
+      })
       .orderBy('discount_percentage', 'DESC')
       .addOrderBy('product.created_at', 'DESC')
       .offset((page - 1) * perPage)
