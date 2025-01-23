@@ -192,14 +192,12 @@ class ProductRepository extends Repository<Product> {
           .from(ProductHistory, 'ph')
           .where('ph.product_id = product.id')
           .andWhere('product.price < ph.price')
+          .andWhere("product.in_review = '0'")
+          .andWhere("product.published = '1'")
           .orderBy('ph.created_at', 'ASC')
           .limit(1)
           .getQuery();
         return `EXISTS (${subQuery})`;
-      })
-      .where({
-        in_review: 0,
-        published: 1,
       })
       .orderBy('discount_percentage', 'DESC')
       .addOrderBy('product.created_at', 'DESC')
