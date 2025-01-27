@@ -139,6 +139,11 @@ export default class CreateProductService {
 
       const history = productHistoryRepository.create(jsonHistory);
       await productHistoryRepository.save(history);
+
+      //update product price
+      productExists.price = data.price;
+      await productRepository.save(productExists);
+
       return productExists;
     }
 
