@@ -142,6 +142,10 @@ export default class CreateProductService {
 
       //update product price
       productExists.price = data.price;
+      productExists.published = publishedEnum.Option1;
+      if (!data.price) {
+        productExists.published = publishedEnum.Option2;
+      }
       await productRepository.save(productExists);
 
       return productExists;
