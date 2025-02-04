@@ -8,17 +8,15 @@ import {
   MoreThanOrEqual,
 } from 'typeorm';
 import Product, { InReviewEnum, publishedEnum } from '../entities/Product';
-import iProductListResponse from '../../interfaces/ProductListResponse';
 import iShowProductResponse from '../../interfaces/ShowProductResponse';
 import IMyProductsResponse from '../../interfaces/MyProductsResponse';
 import iProductSearchListResponse from '../../interfaces/SearchProductResponse';
 import ProductHistory from '../entities/ProductHistory';
-
-interface IListResponse {
-  products: iProductListResponse[];
-  total: number;
-  next_page: boolean;
-}
+import {
+  iProductListResponse,
+  product as iProduct,
+} from '@modules/products/interfaces/ProductListResponse';
+import Iquery from '@modules/products/interfaces/QueryPaginationRequest';
 
 @EntityRepository(Product)
 class ProductRepository extends Repository<Product> {
@@ -35,7 +33,7 @@ class ProductRepository extends Repository<Product> {
   public async findRecommends(
     page: number,
     perPage: number,
-  ): Promise<any | undefined> {
+  ): Promise<iProductListResponse | undefined> {
     const [products, total] = await getRepository(Product)
       .createQueryBuilder('product')
       .select([
@@ -82,10 +80,10 @@ class ProductRepository extends Repository<Product> {
   }
 
   public async searchProducts(
-    query: any,
-  ): Promise<iProductSearchListResponse | undefined> {
-    const perPage = parseInt(query.per_page) || 10;
-    const page = parseInt(query.page) || 1;
+    query: Iquery,
+  ): Promise<iProductListResponse | undefined> {
+    const perPage = query.per_page || 10;
+    const page = query.page || 1;
 
     const keyword = query.search || '';
     const [products, total] = await getRepository(Product)
@@ -136,7 +134,7 @@ class ProductRepository extends Repository<Product> {
   public async findTops(
     page: number,
     perPage: number,
-  ): Promise<any | undefined> {
+  ): Promise<iProductListResponse | undefined> {
     page = page || 1;
     perPage = perPage || 10;
     const queryBuilder = getRepository(Product)
@@ -238,7 +236,7 @@ class ProductRepository extends Repository<Product> {
   public async findNews(
     page: number,
     perPage: number,
-  ): Promise<any | undefined> {
+  ): Promise<iProductListResponse | undefined> {
     const twoDaysAgo = new Date();
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2); // Get the date for two days ago
 
@@ -287,7 +285,7 @@ class ProductRepository extends Repository<Product> {
     };
   }
 
-  public async findProductsInReview(): Promise<any[] | undefined> {
+  public async findProductsInReview(): Promise<iProduct[] | undefined> {
     const products = await getRepository(Product)
       .createQueryBuilder('product')
       .select([

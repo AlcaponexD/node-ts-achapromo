@@ -1,27 +1,30 @@
 import { getCustomRepository } from 'typeorm';
 import ProductRepository from '../typeorm/repository/ProductRepository';
-import iProductRecommendResponse from '../interfaces/ProductListResponse';
+import {
+  iProductListResponse,
+  product as iProduct,
+} from '../interfaces/ProductListResponse';
 import iShowProductResponse from '../interfaces/ShowProductResponse';
 import AppError from '@shared/errors/AppError';
 import iProductSearchListResponse from '../interfaces/SearchProductResponse';
-import Product, {
-  InReviewEnum,
-  publishedEnum,
-} from '../typeorm/entities/Product';
-import { number } from 'joi';
+import { InReviewEnum, publishedEnum } from '../typeorm/entities/Product';
+import iProductRecommendResponse from '../interfaces/MyProductsResponse';
+import Iquery from '../interfaces/QueryPaginationRequest';
 
 export default class ListProductService {
   public async recommends(
     page: number,
     per_page: number,
-  ): Promise<iProductRecommendResponse[] | undefined> {
+  ): Promise<iProductListResponse | undefined> {
     const productRepository = getCustomRepository(ProductRepository);
     const _products = await productRepository.findRecommends(page, per_page);
     return _products;
   }
 
   //TODO Implements search https://stackoverflow.com/questions/53922503/how-to-implement-pagination-in-nestjs-with-typeorm
-  public async search(query: any): Promise<iProductSearchListResponse> {
+  public async search(
+    query: Iquery,
+  ): Promise<iProductListResponse | undefined> {
     const productRepository = getCustomRepository(ProductRepository);
     const results = await productRepository.searchProducts(query);
     if (!results) {
@@ -39,12 +42,12 @@ export default class ListProductService {
     };
   }
 
-  public async topProducts(page, perPage) {
+  public async topProducts(page: number, perPage: number) {
     const productRepository = getCustomRepository(ProductRepository);
     const top = await productRepository.findTops(page, perPage);
     return top;
   }
-  public async newsProducts(page, perPage) {
+  public async newsProducts(page: number, perPage: number) {
     const productRepository = getCustomRepository(ProductRepository);
     const products = await productRepository.findNews(page, perPage);
     return products;
@@ -56,6 +59,7 @@ export default class ListProductService {
     const productRepository = getCustomRepository(ProductRepository);
     const product = await productRepository.findProductById(id);
     if (product) {
+      // eslint-disable-next-line no-self-assign
       product.avatar = product.avatar;
       if (product.user.avatar) {
         product.user.avatar =
@@ -72,25 +76,29 @@ export default class ListProductService {
 
     return product;
   }
-  public async productByUserLogged(id: string): Promise<any[] | undefined> {
+  public async productByUserLogged(
+    id: string,
+  ): Promise<iProductRecommendResponse[] | undefined> {
     const productRepository = getCustomRepository(ProductRepository);
     const products = await productRepository.findMyProductsSended(id);
     products?.map(product => {
+      // eslint-disable-next-line no-self-assign
       product.avatar = product.avatar;
     });
     return products;
   }
 
-  public async productInReview(): Promise<any[] | undefined> {
+  public async productInReview(): Promise<iProduct[] | undefined> {
     const productRepository = getCustomRepository(ProductRepository);
     const products = await productRepository.findProductsInReview();
     products?.map(product => {
+      // eslint-disable-next-line no-self-assign
       product.avatar = product.avatar;
     });
     return products;
   }
 
-  public async moderateProduct(id: string, action: string): Promise<any> {
+  public async moderateProduct(id: string, action: string): Promise<iProduct> {
     const productRepository = getCustomRepository(ProductRepository);
     const product = await productRepository.findOneOrFail(id);
     if (!product) {

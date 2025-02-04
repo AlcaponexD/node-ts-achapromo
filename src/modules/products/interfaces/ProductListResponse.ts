@@ -9,7 +9,7 @@ interface histories {
   updated_at: Date;
 }
 
-export default interface iProductListResponse {
+interface product {
   id: string;
   title: string;
   url: string;
@@ -30,6 +30,14 @@ export default interface iProductListResponse {
     id: string;
     title: string;
   };
-  comments: comments[];
+  comments?: comments[];
   histories?: histories[];
 }
+
+interface iProductListResponse {
+  products: product[];
+  total: number;
+  next_page: boolean;
+}
+
+export { iProductListResponse, product };

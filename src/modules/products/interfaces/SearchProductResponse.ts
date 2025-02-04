@@ -1,7 +1,7 @@
-import iProductListResponse from './ProductListResponse';
+import { iProductListResponse } from './ProductListResponse';
 
 export default interface iProductSearchListResponse {
-  next_page: any;
+  next_page: boolean;
   products: iProductListResponse[];
   total: number;
 }
