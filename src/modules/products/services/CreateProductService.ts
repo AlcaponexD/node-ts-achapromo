@@ -9,8 +9,6 @@ import helpers from '../../../modules/utils/helpers';
 import StoreRepository from '../../../modules/stores/typeorm/repository/StoreRepository';
 import AppError from '../../../shared/errors/AppError';
 import Terabyte from '../../../modules/crawlers/Terabyte';
-import { json } from 'stream/consumers';
-import ProductHistory from '../typeorm/entities/ProductHistory';
 import ProductHistoryRepository from '../typeorm/repository/ProductHistoryRepository';
 
 interface IRequest {

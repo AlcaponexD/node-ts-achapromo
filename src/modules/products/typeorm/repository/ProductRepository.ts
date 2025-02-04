@@ -2,10 +2,8 @@ import {
   EntityRepository,
   ILike,
   IsNull,
-  Like,
   Not,
   Repository,
-  SelectQueryBuilder,
   getRepository,
   MoreThanOrEqual,
 } from 'typeorm';
@@ -14,10 +12,7 @@ import iProductListResponse from '../../interfaces/ProductListResponse';
 import iShowProductResponse from '../../interfaces/ShowProductResponse';
 import IMyProductsResponse from '../../interfaces/MyProductsResponse';
 import iProductSearchListResponse from '../../interfaces/SearchProductResponse';
-import iProductRecommendResponse from '../../interfaces/MyProductsResponse';
 import ProductHistory from '../entities/ProductHistory';
-import Comment from '@modules/comments/typeorm/entities/Comment';
-import { title } from 'process';
 
 interface IListResponse {
   products: iProductListResponse[];
