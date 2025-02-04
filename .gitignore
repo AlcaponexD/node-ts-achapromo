@@ -12,4 +12,5 @@ dist
 error.log
 info.log
 uploads/*
-!uploads/.gitkeep
+!uploads/.gitkeeps
+sendgrid.env
