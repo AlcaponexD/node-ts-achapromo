@@ -136,7 +136,7 @@ class ProductRepository extends Repository<Product> {
     perPage: number,
   ): Promise<iProductListResponse | undefined> {
     const twoDaysAgo = new Date();
-    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2); // Get the date for two days ago
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 5); // Get the date for five days ago
 
     page = page || 1;
     perPage = perPage || 10;
@@ -163,22 +163,14 @@ class ProductRepository extends Repository<Product> {
       .innerJoin('product.category', 'category')
       .addSelect(subQuery => {
         return subQuery
-          .select('ph.price')
-          .from(ProductHistory, 'ph')
-          .where('ph.product_id = product.id')
-          .andWhere('product.price < ph.price')
-          .orderBy('ph.created_at', 'ASC')
-          .limit(1);
-      }, 'history_price')
-      .addSelect(subQuery => {
-        return subQuery
           .select(
             `((ph.price::float - product.price::float) / ph.price::float) * 100`,
           )
           .from(ProductHistory, 'ph')
           .where('ph.product_id = product.id')
           .andWhere('product.price < ph.price')
-          .orderBy('ph.created_at', 'ASC')
+          .andWhere(`ph.created_at > '${twoDaysAgo.toISOString()}'`)
+          .orderBy('ph.created_at', 'DESC')
           .limit(1);
       }, 'discount_percentage')
       .where(qb => {
@@ -190,19 +182,8 @@ class ProductRepository extends Repository<Product> {
           .andWhere('product.price < ph.price')
           .andWhere("product.in_review = '0'")
           .andWhere("product.published = '1'")
-          .andWhere(
-            qb => {
-              const subQuery = qb
-                .subQuery()
-                .select('MAX(ph.created_at)')
-                .from(ProductHistory, 'ph')
-                .where('ph.product_id = product.id')
-                .getQuery();
-              return `(${subQuery}) < :twoDaysAgo`;
-            },
-            { twoDaysAgo },
-          )
-          .orderBy('ph.created_at', 'ASC')
+          .andWhere(`ph.created_at > '${twoDaysAgo.toISOString()}'`)
+          .orderBy('ph.created_at', 'DESC')
           .limit(1)
           .getQuery();
         return `EXISTS (${subQuery})`;
