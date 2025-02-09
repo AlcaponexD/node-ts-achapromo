@@ -135,6 +135,9 @@ class ProductRepository extends Repository<Product> {
     page: number,
     perPage: number,
   ): Promise<iProductListResponse | undefined> {
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2); // Get the date for two days ago
+
     page = page || 1;
     perPage = perPage || 10;
     const queryBuilder = getRepository(Product)
@@ -187,6 +190,18 @@ class ProductRepository extends Repository<Product> {
           .andWhere('product.price < ph.price')
           .andWhere("product.in_review = '0'")
           .andWhere("product.published = '1'")
+          .andWhere(
+            qb => {
+              const subQuery = qb
+                .subQuery()
+                .select('MAX(ph.created_at)')
+                .from(ProductHistory, 'ph')
+                .where('ph.product_id = product.id')
+                .getQuery();
+              return `(${subQuery}) < :twoDaysAgo`;
+            },
+            { twoDaysAgo },
+          )
           .orderBy('ph.created_at', 'ASC')
           .limit(1)
           .getQuery();
