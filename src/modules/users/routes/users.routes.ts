@@ -20,6 +20,7 @@ usersRouter.post(
       name: Joi.string().required(),
       email: Joi.string().email().required(),
       password: Joi.string().required(),
+      'cf-turnstile-response': Joi.string().required(),
     },
   }),
   usersController.create,
