@@ -11,6 +11,7 @@ export default interface iProductRecommendResponse {
   published: publishedEnum;
   in_review: InReviewEnum;
   classification?: number;
+  discount_percentage?: number;
   store: {
     id: string;
     title: string;

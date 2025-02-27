@@ -7,6 +7,7 @@ export default interface iShowProductResponse {
   description?: string;
   created_at: Date;
   classification?: number;
+  discount_percentage?: number;
   store: {
     id: string;
     title: string;
@@ -29,5 +30,11 @@ export default interface iShowProductResponse {
       name: string;
       avatar?: string;
     };
+  }[];
+  history: {
+    id: string;
+    price: number;
+    created_at: Date;
+    updated_at: Date;
   }[];
 }
