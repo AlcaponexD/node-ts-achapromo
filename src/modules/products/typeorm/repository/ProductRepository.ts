@@ -496,21 +496,26 @@ class ProductRepository extends Repository<Product> {
   public async findProductById(
     id: string,
   ): Promise<iShowProductResponse | undefined> {
-    const product = await this.findOne({
-      where: { id },
-      relations: [
-        'store',
-        'user',
-        'category',
-        'comments',
-        'comments.user',
-        'history',
-      ],
-    });
+    const product = await this.createQueryBuilder('product')
+      .innerJoinAndSelect('product.store', 'store')
+      .innerJoinAndSelect('product.user', 'user')
+      .innerJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.comments', 'comments')
+      .leftJoinAndSelect('comments.user', 'commentUser')
+      .leftJoinAndSelect('product.history', 'history')
+      .where('product.id = :id', { id })
+      .getOne();
 
     if (!product) {
       throw new Error('Product not found');
     }
+
+    const histories = product.history.map(history => ({
+      id: history.id,
+      price: history.price,
+      created_at: history.created_at,
+      updated_at: history.updated_at,
+    }));
 
     return {
       id: product.id,
@@ -544,11 +549,9 @@ class ProductRepository extends Repository<Product> {
           avatar: comment.user.avatar,
         },
       })),
-      history: product.history.map(history => ({
-        id: history.id,
-        price: history.price,
-        created_at: history.created_at,
-        updated_at: history.updated_at,
+      history: histories.map(history => ({
+        ...history,
+        id: String(history.id),
       })),
     };
   }
