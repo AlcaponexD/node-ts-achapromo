@@ -10,7 +10,6 @@ import {
 import Product, { InReviewEnum, publishedEnum } from '../entities/Product';
 import iShowProductResponse from '../../interfaces/ShowProductResponse';
 import IMyProductsResponse from '../../interfaces/MyProductsResponse';
-import iProductSearchListResponse from '../../interfaces/SearchProductResponse';
 import ProductHistory from '../entities/ProductHistory';
 import {
   iProductListResponse,
@@ -497,76 +496,21 @@ class ProductRepository extends Repository<Product> {
   public async findProductById(
     id: string,
   ): Promise<iShowProductResponse | undefined> {
-    const twoDaysAgo = new Date();
-    twoDaysAgo.setDate(twoDaysAgo.getDate() - 5);
+    const product = await this.findOne({
+      where: { id },
+      relations: [
+        'store',
+        'user',
+        'category',
+        'comments',
+        'comments.user',
+        'history',
+      ],
+    });
 
-    const queryBuilder = getRepository(Product)
-      .createQueryBuilder('product')
-      .select([
-        'product.id AS id',
-        'product.title AS title',
-        'product.url AS url',
-        'product.avatar AS avatar',
-        'product.price AS price',
-        'product.description AS description',
-        'product.classification AS classification',
-        'product.created_at AS created_at',
-        'store.id AS store_id',
-        'store.title AS store_title',
-        'user.id AS user_id',
-        'user.name AS user_name',
-        'user.avatar AS user_avatar',
-        'category.id AS category_id',
-        'category.title AS category_title',
-        'comments.id AS comment_id',
-        'comments.content AS comment_content',
-        'comments.created_at AS comment_created_at',
-        'comments_user.id AS comment_user_id',
-        'comments_user.name AS comment_user_name',
-        'comments_user.avatar AS comment_user_avatar',
-        'histories.id AS history_id',
-        'histories.price AS history_price',
-        'histories.created_at AS history_created_at',
-        'histories.updated_at AS history_updated_at',
-      ])
-      .innerJoin('product.store', 'store')
-      .innerJoin('product.user', 'user')
-      .innerJoin('product.category', 'category')
-      .leftJoin('product.comments', 'comments')
-      .leftJoin('comments.user', 'comments_user')
-      .leftJoin('product.history', 'histories');
-
-    this.addDiscountPercentageSelect(queryBuilder, twoDaysAgo);
-
-    queryBuilder.where({ id }).orderBy('histories.created_at', 'ASC');
-
-    const rawResults = await queryBuilder.getRawMany();
-    if (!rawResults || rawResults.length === 0) {
+    if (!product) {
       throw new Error('Product not found');
     }
-
-    const product = rawResults[0];
-    const comments = rawResults
-      .filter(row => row.comment_id)
-      .map(row => ({
-        id: row.comment_id,
-        content: row.comment_content,
-        created_at: row.comment_created_at,
-        user: {
-          id: row.comment_user_id,
-          name: row.comment_user_name,
-          avatar: row.comment_user_avatar,
-        },
-      }));
-
-    const history = rawResults
-      .filter(row => row.history_id)
-      .map(row => ({
-        id: row.history_id,
-        price: row.history_price,
-        created_at: row.history_created_at,
-        updated_at: row.history_updated_at,
-      }));
 
     return {
       id: product.id,
@@ -574,25 +518,38 @@ class ProductRepository extends Repository<Product> {
       url: product.url,
       avatar: product.avatar,
       price: product.price,
-      discount_percentage: product.discount_percentage,
       description: product.description,
       classification: product.classification,
       created_at: product.created_at,
       store: {
-        id: product.store_id,
-        title: product.store_title,
+        id: product.store.id,
+        title: product.store.title,
       },
       user: {
-        id: product.user_id,
-        name: product.user_name,
-        avatar: product.user_avatar,
+        id: product.user.id,
+        name: product.user.name,
+        avatar: product.user.avatar,
       },
       category: {
-        id: product.category_id,
-        title: product.category_title,
+        id: product.category.id,
+        title: product.category.title,
       },
-      comments,
-      history,
+      comments: product.comments.map(comment => ({
+        id: comment.id,
+        content: comment.content,
+        created_at: comment.created_at,
+        user: {
+          id: comment.user.id,
+          name: comment.user.name,
+          avatar: comment.user.avatar,
+        },
+      })),
+      history: product.history.map(history => ({
+        id: history.id,
+        price: history.price,
+        created_at: history.created_at,
+        updated_at: history.updated_at,
+      })),
     };
   }
 
