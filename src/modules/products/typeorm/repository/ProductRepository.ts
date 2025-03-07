@@ -548,7 +548,7 @@ class ProductRepository extends Repository<Product> {
           name: comment.user.name,
           avatar: comment.user.avatar,
         },
-      })),
+      })), 
       history: histories.map(history => ({
         ...history,
         id: String(history.id),
