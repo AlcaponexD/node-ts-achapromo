@@ -13,7 +13,8 @@ class CacheService {
   private defaultExpirationMs: number;
 
   constructor() {
-    this.cacheDir = path.resolve(__dirname, '..', '..', '..', 'cache');
+    // Use absolute path to ensure cross-platform compatibility
+    this.cacheDir = path.resolve(process.cwd(), 'cache');
     // Default expiration time: 12 hours in milliseconds
     this.defaultExpirationMs = 12 * 60 * 60 * 1000;
     this.initCacheDir();
@@ -22,8 +23,11 @@ class CacheService {
   private async initCacheDir(): Promise<void> {
     try {
       await fs.mkdir(this.cacheDir, { recursive: true });
+      // Verify the directory was created successfully
+      await fs.access(this.cacheDir, fs.constants.W_OK);
+      logger.info(`Cache directory initialized at: ${this.cacheDir}`);
     } catch (error) {
-      logger.error(`Failed to create cache directory: ${error}`);
+      logger.error(`Failed to create or access cache directory: ${error}`);
     }
   }
 
@@ -58,6 +62,7 @@ class CacheService {
       // Check if cache is expired
       if (Date.now() - cacheItem.timestamp > cacheItem.expiresIn) {
         logger.info(`Cache expired for key: ${key}`);
+        await this.invalidate(key); // Clean up expired cache
         return null;
       }
 
