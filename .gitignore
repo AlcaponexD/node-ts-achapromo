@@ -14,3 +14,4 @@ info.log
 uploads/*
 !uploads/.gitkeeps
 sendgrid.env
+cache

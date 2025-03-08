@@ -10,6 +10,7 @@ import iProductSearchListResponse from '../interfaces/SearchProductResponse';
 import { InReviewEnum, publishedEnum } from '../typeorm/entities/Product';
 import iProductRecommendResponse from '../interfaces/MyProductsResponse';
 import Iquery from '../interfaces/QueryPaginationRequest';
+import CacheService from '../../utils/cache';
 
 export default class ListProductService {
   public async recommends(
@@ -43,8 +44,19 @@ export default class ListProductService {
   }
 
   public async topProducts(page: number, perPage: number) {
+    const cacheKey = `tops_${page}_${perPage}`;
+    const cache = await CacheService.get(cacheKey);
+
+    if (cache) {
+      return cache;
+    }
+
     const productRepository = getCustomRepository(ProductRepository);
     const top = await productRepository.findTops(page, perPage);
+
+    // Cache the results for 12 hours
+    await CacheService.set(cacheKey, top);
+
     return top;
   }
   public async newsProducts(page: number, perPage: number) {
