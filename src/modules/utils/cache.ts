@@ -15,8 +15,8 @@ class CacheService {
   constructor() {
     // Use absolute path to ensure cross-platform compatibility
     this.cacheDir = path.resolve(process.cwd(), 'cache');
-    // Default expiration time: 12 hours in milliseconds
-    this.defaultExpirationMs = 12 * 60 * 60 * 1000;
+    // Default expiration time: 4 hours in milliseconds
+    this.defaultExpirationMs = 4 * 60 * 60 * 1000;
     this.initCacheDir();
   }
 

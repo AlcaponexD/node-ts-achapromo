@@ -7,6 +7,7 @@ import sessionsRouter from '../../../modules/users/routes/session.routes';
 import usersRouter from '../../../modules/users/routes/users.routes';
 import commentsRouter from '../../../modules/comments/routes/comments.routes';
 import crawlerRouter from '../../../modules/crawlers/crawler.routes';
+import cacheRouter from '../../../modules/utils/routes/cache.routes';
 
 const routes = Router();
 
@@ -18,5 +19,6 @@ routes.use('/store', storeRouter);
 routes.use('/categories', categoryRouter);
 routes.use('/comments', commentsRouter);
 routes.use('/crawlers', crawlerRouter);
+routes.use('/cache', cacheRouter);
 
 export default routes;
