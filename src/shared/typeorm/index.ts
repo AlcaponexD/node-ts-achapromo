@@ -1,14 +1,18 @@
-import { createConnection } from 'typeorm';
+import { createConnection, Connection } from 'typeorm';
+import { initializeDiscord } from '../http/discord';
 
-async function startApp() {
+async function startApp(): Promise<void> {
   try {
-    const connection: Connection = await createConnection();
-    console.log('Conexão com o banco de dados estabelecida com sucesso!');
+    const connection = await createConnection();
+    console.log('Database connection established successfully!');
 
-    // Outras operações com o TypeORM aqui
+    // Initialize Discord notification service after database connection
+    await initializeDiscord(connection);
   } catch (error) {
-    console.error('Erro ao conectar ao banco de dados:', error);
+    console.error('Error connecting to database:', error);
   }
 }
+
+export default startApp;
 
 startApp();

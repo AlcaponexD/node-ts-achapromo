@@ -11,6 +11,7 @@ import { InReviewEnum, publishedEnum } from '../typeorm/entities/Product';
 import iProductRecommendResponse from '../interfaces/MyProductsResponse';
 import Iquery from '../interfaces/QueryPaginationRequest';
 import CacheService from '../../utils/cache';
+import TrackingService from '../../tracking/services/TrackingService';
 
 export default class ListProductService {
   public async recommends(
@@ -70,7 +71,12 @@ export default class ListProductService {
   ): Promise<iShowProductResponse | undefined> {
     const productRepository = getCustomRepository(ProductRepository);
     const product = await productRepository.findProductById(id);
+    const trackingService = new TrackingService();
     if (product) {
+      const { tracking_url } = await trackingService.generateTrackingUrl(
+        product.id,
+      );
+      product.url = tracking_url;
       // eslint-disable-next-line no-self-assign
       product.avatar = product.avatar;
       if (product.user.avatar) {

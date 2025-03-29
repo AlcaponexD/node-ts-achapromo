@@ -1,23 +1,14 @@
-interface comments {
-  id: string;
-}
-
-interface histories {
-  id: number;
-  price: number;
-  created_at: Date;
-  updated_at: Date;
-}
-
-interface product {
+export interface product {
   id: string;
   title: string;
   url: string;
   avatar: string;
   price: number;
-  description?: string;
+  discount_percentage?: number;
+  description: string;
+  classification: number;
   created_at: Date;
-  classification?: number;
+  comments_count?: number;
   store: {
     id: string;
     title: string;
@@ -30,14 +21,10 @@ interface product {
     id: string;
     title: string;
   };
-  comments?: comments[];
-  histories?: histories[];
 }
 
-interface iProductListResponse {
+export interface iProductListResponse {
   products: product[];
   total: number;
   next_page: boolean;
 }
-
-export { iProductListResponse, product };

@@ -7,6 +7,7 @@ import 'express-async-errors';
 import cors from 'cors';
 import routes from './routes';
 import '../../shared/typeorm/index';
+import { initializeDiscord } from './discord';
 import { errors } from 'celebrate';
 import uploadConfig from '../../config/upload';
 import AppError from '../errors/AppError';
