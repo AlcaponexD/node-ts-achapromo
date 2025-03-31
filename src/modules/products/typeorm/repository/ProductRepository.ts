@@ -160,21 +160,11 @@ class ProductRepository extends Repository<Product> {
       .innerJoinAndSelect('product.user', 'user')
       .innerJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.comments', 'comments')
-      .leftJoinAndSelect('product.history', 'history')
       .where({
         in_review: InReviewEnum.Option1,
         published: InReviewEnum.Option2,
         discount: MoreThan(0),
-      })
-      .andWhere(qb => {
-        const subQuery = qb
-          .subQuery()
-          .select('MAX(ph.created_at)')
-          .from('product_histories', 'ph')
-          .where('ph.product_id = product.id')
-          .andWhere('ph.created_at >= :fiveDaysAgo', { fiveDaysAgo })
-          .getQuery();
-        return 'EXISTS ' + subQuery;
+        updated_at: MoreThanOrEqual(fiveDaysAgo),
       })
       .orderBy('product.discount', 'DESC')
       .addOrderBy('product.created_at', 'DESC')

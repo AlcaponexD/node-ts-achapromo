@@ -53,15 +53,24 @@ class UpdateProductDiscountsService {
             discount = Math.round(discount);
           }
 
-          // Atualiza o desconto do produto
+          // Atualiza o desconto do produto e o updated_at com a data do histórico mais recente
           await productRepository.update(product.id, {
             discount: discount,
+            updated_at: histories[0].created_at,
           });
         } else {
           // Se não tiver histórico suficiente, define desconto como 0
-          await productRepository.update(product.id, {
-            discount: 0,
-          });
+          // Se tiver pelo menos um histórico, usa a data dele para o updated_at
+          if (histories.length === 1) {
+            await productRepository.update(product.id, {
+              discount: 0,
+              updated_at: histories[0].created_at,
+            });
+          } else {
+            await productRepository.update(product.id, {
+              discount: 0,
+            });
+          }
         }
 
         processed += products.length;
