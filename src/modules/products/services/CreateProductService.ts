@@ -8,7 +8,6 @@ import CategoryRepository from '../../../modules/categories/repository/CategoryR
 import helpers from '../../../modules/utils/helpers';
 import StoreRepository from '../../../modules/stores/typeorm/repository/StoreRepository';
 import AppError from '../../../shared/errors/AppError';
-import Terabyte from '../../../modules/crawlers/Terabyte';
 import ProductHistoryRepository from '../typeorm/repository/ProductHistoryRepository';
 
 interface IRequest {
@@ -73,8 +72,8 @@ export default class CreateProductService {
     //mock
     const storeList: Record<string, any> = {
       terabyteshop: async (url: string) => {
-        const terabyte = new Terabyte();
-        return terabyte.run(url);
+        //const terabyte = new Terabyte();
+        //return terabyte.run(url);
       },
     };
 

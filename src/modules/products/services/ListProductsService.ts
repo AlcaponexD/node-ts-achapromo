@@ -45,18 +45,18 @@ export default class ListProductService {
   }
 
   public async topProducts(page: number, perPage: number) {
-    const cacheKey = `tops_${page}_${perPage}`;
-    const cache = await CacheService.get(cacheKey);
+    // const cacheKey = `tops_${page}_${perPage}`;
+    // const cache = await CacheService.get(cacheKey);
 
-    if (cache) {
-      return cache;
-    }
+    // if (cache) {
+    //   return cache;
+    // }
 
     const productRepository = getCustomRepository(ProductRepository);
     const top = await productRepository.findTops(page, perPage);
 
     // Cache the results for 12 hours
-    await CacheService.set(cacheKey, top);
+    //await CacheService.set(cacheKey, top);
 
     return top;
   }

@@ -54,6 +54,9 @@ class Product {
   @Column()
   classification: number;
 
+  @Column()
+  discount: number;
+
   @OneToOne(() => User, { cascade: true })
   @JoinColumn({ name: 'user_id' })
   user: User;
