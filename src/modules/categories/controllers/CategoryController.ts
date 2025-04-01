@@ -15,8 +15,13 @@ class CategoryController {
     return response.json(categories);
   }
   public async show(request: Request, response: Response): Promise<Response> {
+    const { page = 1, per_page = 20 } = request.query;
     const categorysService = new ListCategoryService();
-    const products = await categorysService.show(request.params.id);
+    const products = await categorysService.show(
+      request.params.id,
+      Number(page),
+      Number(per_page),
+    );
     return response.json(products);
   }
 }

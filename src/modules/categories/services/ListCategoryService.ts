@@ -21,8 +21,8 @@ class ListCategoryService {
     return categories;
   }
 
-  public async show(id: string): Promise<ShowCategoryProductResponse> {
-    const products = await getRepository(Product)
+  public async show(id: string, page: number, limit: number): Promise<any> {
+    const [products, total] = await getRepository(Product)
       .createQueryBuilder('product')
       .select([
         'product.id',
@@ -30,6 +30,7 @@ class ListCategoryService {
         'product.url',
         'product.avatar',
         'product.price',
+        'product.discount as discount_percentage',
         'product.description',
         'product.classification',
         'product.created_at',
@@ -52,7 +53,9 @@ class ListCategoryService {
         published: 1,
       })
       .andWhere('category.id = :categoryId', { categoryId: id })
-      .getMany();
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
 
     const final_products = products.map(product => {
       return product;
@@ -68,6 +71,12 @@ class ListCategoryService {
     return {
       category,
       products: final_products,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 }
