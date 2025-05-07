@@ -2,6 +2,7 @@ import { getCustomRepository } from 'typeorm';
 import { getRepository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import Product from '../../products/typeorm/entities/Product';
+import StoreRepository from '@modules/stores/typeorm/repository/StoreRepository';
 
 interface ITrackingResponse {
   tracking_url: string;
@@ -9,6 +10,24 @@ interface ITrackingResponse {
 }
 
 class TrackingService {
+  private async afiliatedLink(link: string, store_id: string): Promise<string> {
+    //Get the store with store_id
+    const storeRepository = getCustomRepository(StoreRepository);
+    const store = await storeRepository.findOne(store_id);
+
+    if (store) {
+      //Get the store link
+      const storeLink = store.title.toLowerCase();
+
+      //Afliated amz
+      if (storeLink == 'amazon') {
+        return `${link}?tag=achapromo00-20`;
+      }
+    }
+
+    return link;
+  }
+
   public async generateTrackingUrl(
     product_id: string,
   ): Promise<ITrackingResponse> {
@@ -24,7 +43,7 @@ class TrackingService {
 
     return {
       tracking_url,
-      original_url: product.url,
+      original_url: await this.afiliatedLink(product.url, product.store_id),
     };
   }
 
