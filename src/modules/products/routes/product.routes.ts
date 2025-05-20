@@ -49,6 +49,12 @@ productRouter.get(
   productController.showMyProducts,
 );
 
+productRouter.get(
+  '/show/ranking',
+  isAuthenticated,
+  productController.listTopProductsByDay,
+);
+
 productRouter.put(
   '/:id/classification',
   isAuthenticated,

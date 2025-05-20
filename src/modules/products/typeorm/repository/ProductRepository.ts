@@ -418,5 +418,55 @@ class ProductRepository extends Repository<Product> {
 
     return true;
   }
+
+  public async findProductsRankingByDay(
+    page: number,
+    perPage: number,
+  ): Promise<
+    { products: any[]; total: number; next_page: boolean } | undefined
+  > {
+    const queryBuilder = this.createQueryBuilder('product')
+      .innerJoinAndSelect('product.store', 'store')
+      .innerJoinAndSelect('product.user', 'user')
+      .innerJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.comments', 'comments')
+      .leftJoinAndSelect('product.history', 'historic')
+      .where({
+        in_review: InReviewEnum.Option1,
+        published: InReviewEnum.Option2,
+        updated_at: MoreThanOrEqual(new Date(Date.now() - 24 * 60 * 60 * 1000)),
+      })
+      .orderBy('product.discount', 'DESC')
+      .skip((page - 1) * perPage)
+      .take(perPage);
+
+    const [products, total] = await queryBuilder.getManyAndCount();
+    const totalPages = Math.ceil(total / perPage);
+    const nextPage = page < totalPages;
+    const results = products.map((product: any) => {
+      product.price = product.price / 100;
+      const priceBRL = product.price.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      });
+
+      product.price = product.price * 100;
+
+      product.discount_percentage = product.discount;
+      product.post = `[${product.discount}%OFF🤯 ]Descubra ${product.title} com ${product.discount}% de Desconto! 🚀 
+    Aproveite a Oferta Imperdível no site da http://Achapromo.com.br
+    Caixa de Som Marvo SG-302, RGB, Bluetooth, Sem Fio, Função Carregamento Sem Fio, Branco, SG-302
+    ${priceBRL}`;
+
+      return product;
+    });
+
+    return {
+      products: results,
+      total: totalPages,
+      next_page: nextPage,
+    };
+  }
 }
+
 export default ProductRepository;

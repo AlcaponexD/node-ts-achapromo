@@ -176,4 +176,23 @@ export default class ProductControlller {
 
     return response.json(isChanged);
   }
+
+  public async listTopProductsByDay(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const { page, per_page } = request.query;
+
+    // Converte os valores para números (caso sejam strings)
+    const pageNumber = page ? parseInt(page as string, 10) : 1;
+    const perPageNumber = per_page ? parseInt(per_page as string, 10) : 10;
+
+    const productService = new ListProductService();
+    const results = await productService.listTopProductsByDay(
+      pageNumber,
+      perPageNumber,
+    );
+
+    return response.json(results);
+  }
 }

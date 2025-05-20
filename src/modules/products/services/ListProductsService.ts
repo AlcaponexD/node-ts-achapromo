@@ -131,4 +131,16 @@ export default class ListProductService {
     await productRepository.save(product);
     return product;
   }
+
+  public async listTopProductsByDay(
+    pageNumber: number,
+    perPageNumber: number,
+  ): Promise<any | undefined> {
+    const productRepository = getCustomRepository(ProductRepository);
+    const products = await productRepository.findProductsRankingByDay(
+      pageNumber,
+      perPageNumber,
+    );
+    return products;
+  }
 }

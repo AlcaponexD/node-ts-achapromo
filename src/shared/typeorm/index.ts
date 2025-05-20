@@ -7,7 +7,7 @@ async function startApp(): Promise<void> {
     console.log('Database connection established successfully!');
 
     // Initialize Discord notification service after database connection
-    await initializeDiscord(connection);
+    //await initializeDiscord(connection);
   } catch (error) {
     console.error('Error connecting to database:', error);
   }
