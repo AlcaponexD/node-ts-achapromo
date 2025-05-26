@@ -23,6 +23,13 @@ class TrackingService {
       if (storeLink == 'amazon') {
         return `${link}?tag=achapromo00-20`;
       }
+
+      //Kabum affiliate via Awin
+      if (storeLink === 'kabum') {
+        return `https://www.awin1.com/cread.php?awinmid=17729&awinaffid=1959555&ued=${encodeURIComponent(
+          link,
+        )}`;
+      }
     }
 
     return link;
