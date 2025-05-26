@@ -454,9 +454,8 @@ class ProductRepository extends Repository<Product> {
 
       product.discount_percentage = product.discount;
       product.post = `[${product.discount}%OFF🤯 ]Descubra ${product.title} com ${product.discount}% de Desconto! 🚀 
-    Aproveite a Oferta Imperdível no site da http://Achapromo.com.br
-    Caixa de Som Marvo SG-302, RGB, Bluetooth, Sem Fio, Função Carregamento Sem Fio, Branco, SG-302
-    ${priceBRL}`;
+  Aproveite a Oferta Imperdível no site da http://Achapromo.com.br
+  ${priceBRL}`;
 
       return product;
     });
