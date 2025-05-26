@@ -9,6 +9,7 @@ import StarService from '../../stars/services/StarService';
 import AppError from '../../../shared/errors/AppError';
 import ListCommentsService from '@modules/comments/services/ListCommentsService';
 import Comment from '@modules/comments/typeorm/entities/Comment';
+import Iquery from '../interfaces/QueryPaginationRequest';
 
 export default class ProductControlller {
   public async create(request: Request, response: Response): Promise<Response> {
@@ -57,12 +58,14 @@ export default class ProductControlller {
 
     const results = await productService.topProducts(pageNumber, perPageNumber);
 
-    for (const i in results.products) {
-      const listCommentsService = new ListCommentsService();
-      const comments = await listCommentsService.findByProductId(
-        results.products[i].id,
-      );
-      results.products[i].comments = comments;
+    if (results && results.products) {
+      for (const i in results.products) {
+        const listCommentsService = new ListCommentsService();
+        const comments = await listCommentsService.findByProductId(
+          results.products[i].id,
+        );
+        (results.products[i] as any).comments = comments;
+      }
     }
 
     return response.json(results);
@@ -130,7 +133,13 @@ export default class ProductControlller {
   ): Promise<Response> {
     const productService = new ListProductService();
 
-    const product = await productService.search(request.query);
+    const { page, per_page, ...rest } = request.query;
+    const query: Iquery = {
+      page: page ? parseInt(page as string, 10) : 1,
+      per_page: per_page ? parseInt(per_page as string, 10) : 10,
+      ...rest,
+    };
+    const product = await productService.search(query);
     return response.json(product);
   }
 
