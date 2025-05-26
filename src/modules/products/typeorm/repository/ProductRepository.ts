@@ -7,6 +7,7 @@ import {
   getRepository,
   MoreThanOrEqual,
   MoreThan,
+  LessThanOrEqual,
 } from 'typeorm';
 import Product, { InReviewEnum, publishedEnum } from '../entities/Product';
 import iShowProductResponse from '../../interfaces/ShowProductResponse';
@@ -163,8 +164,8 @@ class ProductRepository extends Repository<Product> {
       .where({
         in_review: InReviewEnum.Option1,
         published: InReviewEnum.Option2,
-        discount: MoreThan(0),
-        updated_at: MoreThanOrEqual(fiveDaysAgo),
+        discount: MoreThan(3),
+        updated_at: MoreThanOrEqual(new Date(Date.now() - 24 * 60 * 60 * 1000)),
       })
       .orderBy('product.discount', 'DESC')
       .addOrderBy('product.created_at', 'DESC')
