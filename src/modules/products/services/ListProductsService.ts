@@ -34,6 +34,14 @@ export default class ListProductService {
   public async search(
     query: Iquery,
   ): Promise<iProductListResponse | undefined> {
+    // Pré-processa a busca para usar full text search
+    if (query.search) {
+      // Remove caracteres especiais e normaliza espaços
+      query.search = query.search
+        .replace(/[^\w\s]/gi, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
     const productRepository = getCustomRepository(ProductRepository);
     const results = await productRepository.searchProducts(query);
     if (!results) {

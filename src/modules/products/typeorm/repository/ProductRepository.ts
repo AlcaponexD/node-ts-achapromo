@@ -103,14 +103,28 @@ class ProductRepository extends Repository<Product> {
     const validOrders = ['discount', 'price', 'title', 'created_at'];
     const orderField = validOrders.includes(orderBy) ? orderBy : 'title';
 
+    // Busca avançada: full text search do Postgres
+    let searchCondition = '';
+    let params: any = {};
+    if (keyword) {
+      searchCondition =
+        "to_tsvector('portuguese', product.title) @@ plainto_tsquery('portuguese', :search)";
+      params = { search: keyword };
+    }
+
     const queryBuilder = this.createQueryBuilder('product')
       .innerJoinAndSelect('product.store', 'store')
       .innerJoinAndSelect('product.user', 'user')
       .innerJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.comments', 'comments')
-      .where('product.title ILIKE :keyword', { keyword: `%${keyword}%` })
       .andWhere("product.in_review = '0'")
-      .andWhere("product.published = '1'")
+      .andWhere("product.published = '1'");
+
+    if (searchCondition) {
+      queryBuilder.andWhere(searchCondition, params);
+    }
+
+    queryBuilder
       .orderBy(`product.${orderField}`, orderDirection)
       .skip((page - 1) * perPage)
       .take(perPage);
