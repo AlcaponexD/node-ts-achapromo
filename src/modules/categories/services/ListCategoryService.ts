@@ -21,7 +21,17 @@ class ListCategoryService {
     return categories;
   }
 
-  public async show(id: string, page: number, limit: number): Promise<any> {
+  public async show(
+    id: string,
+    page: number,
+    limit: number,
+    orderBy = 'discount',
+    orderDirection: 'ASC' | 'DESC' = 'DESC',
+  ): Promise<any> {
+    // Validação dos campos permitidos para ordenação
+    const validOrders = ['discount', 'price'];
+    const orderField = validOrders.includes(orderBy) ? orderBy : 'discount';
+
     const [products, total] = await getRepository(Product)
       .createQueryBuilder('product')
       .select([
@@ -30,7 +40,7 @@ class ListCategoryService {
         'product.url',
         'product.avatar',
         'product.price',
-        'product.discount as discount_percentage',
+        'product.discount', // importante para order by funcionar
         'product.description',
         'product.classification',
         'product.created_at',
@@ -53,6 +63,7 @@ class ListCategoryService {
         published: 1,
       })
       .andWhere('category.id = :categoryId', { categoryId: id })
+      .orderBy(`product.${orderField}`, orderDirection)
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();

@@ -15,12 +15,24 @@ class CategoryController {
     return response.json(categories);
   }
   public async show(request: Request, response: Response): Promise<Response> {
-    const { page = 1, per_page = 20 } = request.query;
+    const {
+      page = 1,
+      per_page = 20,
+      order_by,
+      order_direction,
+    } = request.query;
     const categorysService = new ListCategoryService();
+    const orderBy = order_by ? String(order_by) : 'created_at';
+    const orderDirection =
+      order_direction && String(order_direction).toUpperCase() === 'ASC'
+        ? 'ASC'
+        : 'DESC';
     const products = await categorysService.show(
       request.params.id,
       Number(page),
       Number(per_page),
+      orderBy,
+      orderDirection,
     );
     return response.json(products);
   }
