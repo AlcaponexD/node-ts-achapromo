@@ -35,10 +35,9 @@ class ProductRepository extends Repository<Product> {
   public async findRecommends(
     page: number,
     perPage: number,
+    orderBy = 'classification',
+    orderDirection: 'ASC' | 'DESC' = 'DESC',
   ): Promise<iProductListResponse | undefined> {
-    const twoDaysAgo = new Date();
-    twoDaysAgo.setDate(twoDaysAgo.getDate() - 5);
-
     const queryBuilder = this.createQueryBuilder('product')
       .innerJoinAndSelect('product.store', 'store')
       .innerJoinAndSelect('product.user', 'user')
@@ -49,7 +48,7 @@ class ProductRepository extends Repository<Product> {
         published: InReviewEnum.Option2,
         classification: Not(IsNull()),
       })
-      .orderBy('product.classification', 'DESC')
+      .orderBy(`product.${orderBy}`, orderDirection)
       .skip((page - 1) * perPage)
       .take(perPage);
 
@@ -90,11 +89,19 @@ class ProductRepository extends Repository<Product> {
   }
 
   public async searchProducts(
-    query: Iquery,
+    query: Iquery & { order_by?: string; order_direction?: 'ASC' | 'DESC' },
   ): Promise<iProductListResponse | undefined> {
     const perPage = query.per_page || 10;
     const page = query.page || 1;
     const keyword = query.search || '';
+    const orderBy = query.order_by || 'title';
+    const orderDirection =
+      query.order_direction && query.order_direction.toUpperCase() === 'ASC'
+        ? 'ASC'
+        : 'DESC';
+
+    const validOrders = ['discount', 'price', 'title', 'created_at'];
+    const orderField = validOrders.includes(orderBy) ? orderBy : 'title';
 
     const queryBuilder = this.createQueryBuilder('product')
       .innerJoinAndSelect('product.store', 'store')
@@ -103,10 +110,8 @@ class ProductRepository extends Repository<Product> {
       .leftJoinAndSelect('product.comments', 'comments')
       .where('product.title ILIKE :keyword', { keyword: `%${keyword}%` })
       .andWhere("product.in_review = '0'")
-      .andWhere("product.published = '1'");
-
-    queryBuilder
-      .orderBy('product.title', 'DESC')
+      .andWhere("product.published = '1'")
+      .orderBy(`product.${orderField}`, orderDirection)
       .skip((page - 1) * perPage)
       .take(perPage);
 
@@ -149,12 +154,15 @@ class ProductRepository extends Repository<Product> {
   public async findTops(
     page: number,
     perPage: number,
+    orderBy = 'discount',
+    orderDirection: 'ASC' | 'DESC' = 'DESC',
   ): Promise<iProductListResponse | undefined> {
     page = page || 1;
     perPage = perPage || 10;
 
-    const fiveDaysAgo = new Date();
-    fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+    const validOrders = ['discount', 'price'];
+    const orderField = validOrders.includes(orderBy) ? orderBy : 'discount';
+    const direction = orderDirection === 'ASC' ? 'ASC' : 'DESC';
 
     const queryBuilder = this.createQueryBuilder('product')
       .innerJoinAndSelect('product.store', 'store')
@@ -167,7 +175,7 @@ class ProductRepository extends Repository<Product> {
         discount: MoreThan(3),
         updated_at: MoreThanOrEqual(new Date(Date.now() - 24 * 60 * 60 * 1000)),
       })
-      .orderBy('product.discount', 'DESC')
+      .orderBy(`product.${orderField}`, direction)
       .addOrderBy('product.created_at', 'DESC')
       .skip((page - 1) * perPage)
       .take(perPage);
@@ -211,6 +219,8 @@ class ProductRepository extends Repository<Product> {
   public async findNews(
     page: number,
     perPage: number,
+    orderBy = 'created_at',
+    orderDirection: 'ASC' | 'DESC' = 'DESC',
   ): Promise<iProductListResponse | undefined> {
     const twoDaysAgo = new Date();
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
@@ -225,7 +235,7 @@ class ProductRepository extends Repository<Product> {
         published: InReviewEnum.Option2,
         created_at: MoreThanOrEqual(twoDaysAgo),
       })
-      .orderBy('product.created_at', 'DESC')
+      .orderBy(`product.${orderBy}`, orderDirection)
       .skip((page - 1) * perPage)
       .take(perPage);
 

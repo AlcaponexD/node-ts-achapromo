@@ -33,15 +33,23 @@ export default class ProductControlller {
     request: Request,
     response: Response,
   ): Promise<Response> {
-    // Captura os query parameters
-    const { page, per_page } = request.query;
+    const { page, per_page, order_by, order_direction } = request.query;
 
-    // Converte os valores para números (caso sejam strings)
     const pageNumber = page ? parseInt(page as string, 10) : 1;
     const perPageNumber = per_page ? parseInt(per_page as string, 10) : 10;
+    const orderBy = order_by ? String(order_by) : 'classification';
+    const orderDirection =
+      order_direction && String(order_direction).toUpperCase() === 'ASC'
+        ? 'ASC'
+        : 'DESC';
 
     const productService = new ListProductService();
-    const products = await productService.recommends(pageNumber, perPageNumber);
+    const products = await productService.recommends(
+      pageNumber,
+      perPageNumber,
+      orderBy,
+      orderDirection,
+    );
     return response.json(products);
   }
 
@@ -49,14 +57,24 @@ export default class ProductControlller {
     request: Request,
     response: Response,
   ): Promise<Response> {
-    const { page, per_page } = request.query;
+    const { page, per_page, order_by, order_direction } = request.query;
 
     // Converte os valores para números (caso sejam strings)
     const pageNumber = page ? parseInt(page as string, 10) : 1;
     const perPageNumber = per_page ? parseInt(per_page as string, 10) : 10;
+    const orderBy = order_by ? String(order_by) : 'discount';
+    const orderDirection =
+      order_direction && String(order_direction).toUpperCase() === 'ASC'
+        ? 'ASC'
+        : 'DESC';
     const productService = new ListProductService();
 
-    const results = await productService.topProducts(pageNumber, perPageNumber);
+    const results = await productService.topProducts(
+      pageNumber,
+      perPageNumber,
+      orderBy,
+      orderDirection,
+    );
 
     if (results && results.products) {
       for (const i in results.products) {
@@ -75,16 +93,22 @@ export default class ProductControlller {
     request: Request,
     response: Response,
   ): Promise<Response> {
-    const { page, per_page } = request.query;
+    const { page, per_page, order_by, order_direction } = request.query;
 
-    // Converte os valores para números (caso sejam strings)
     const pageNumber = page ? parseInt(page as string, 10) : 1;
     const perPageNumber = per_page ? parseInt(per_page as string, 10) : 10;
+    const orderBy = order_by ? String(order_by) : 'created_at';
+    const orderDirection =
+      order_direction && String(order_direction).toUpperCase() === 'ASC'
+        ? 'ASC'
+        : 'DESC';
 
     const productService = new ListProductService();
     const products = await productService.newsProducts(
       pageNumber,
       perPageNumber,
+      orderBy,
+      orderDirection,
     );
     return response.json(products);
   }
@@ -133,10 +157,18 @@ export default class ProductControlller {
   ): Promise<Response> {
     const productService = new ListProductService();
 
-    const { page, per_page, ...rest } = request.query;
-    const query: Iquery = {
+    const { page, per_page, order_by, order_direction, ...rest } =
+      request.query;
+    const query: Iquery & {
+      order_by?: string;
+      order_direction?: 'ASC' | 'DESC';
+    } = {
       page: page ? parseInt(page as string, 10) : 1,
       per_page: per_page ? parseInt(per_page as string, 10) : 10,
+      order_by: order_by ? String(order_by) : undefined,
+      order_direction: order_direction
+        ? (String(order_direction).toUpperCase() as 'ASC' | 'DESC')
+        : undefined,
       ...rest,
     };
     const product = await productService.search(query);

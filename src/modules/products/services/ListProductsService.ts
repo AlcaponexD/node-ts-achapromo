@@ -17,9 +17,16 @@ export default class ListProductService {
   public async recommends(
     page: number,
     per_page: number,
+    orderBy = 'classification',
+    orderDirection: 'ASC' | 'DESC' = 'DESC',
   ): Promise<iProductListResponse | undefined> {
     const productRepository = getCustomRepository(ProductRepository);
-    const _products = await productRepository.findRecommends(page, per_page);
+    const _products = await productRepository.findRecommends(
+      page,
+      per_page,
+      orderBy,
+      orderDirection,
+    );
     return _products;
   }
 
@@ -44,25 +51,35 @@ export default class ListProductService {
     };
   }
 
-  public async topProducts(page: number, perPage: number) {
-    // const cacheKey = `tops_${page}_${perPage}`;
-    // const cache = await CacheService.get(cacheKey);
-
-    // if (cache) {
-    //   return cache;
-    // }
-
+  public async topProducts(
+    page: number,
+    perPage: number,
+    orderBy: string,
+    orderDirection: 'ASC' | 'DESC' = 'DESC',
+  ) {
     const productRepository = getCustomRepository(ProductRepository);
-    const top = await productRepository.findTops(page, perPage);
-
-    // Cache the results for 12 hours
-    //await CacheService.set(cacheKey, top);
+    const top = await productRepository.findTops(
+      page,
+      perPage,
+      orderBy,
+      orderDirection,
+    );
 
     return top;
   }
-  public async newsProducts(page: number, perPage: number) {
+  public async newsProducts(
+    page: number,
+    perPage: number,
+    orderBy = 'created_at',
+    orderDirection: 'ASC' | 'DESC' = 'DESC',
+  ) {
     const productRepository = getCustomRepository(ProductRepository);
-    const products = await productRepository.findNews(page, perPage);
+    const products = await productRepository.findNews(
+      page,
+      perPage,
+      orderBy,
+      orderDirection,
+    );
     return products;
   }
 
