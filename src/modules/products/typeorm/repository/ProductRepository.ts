@@ -18,6 +18,7 @@ import {
   product as iProduct,
 } from '@modules/products/interfaces/ProductListResponse';
 import Iquery from '@modules/products/interfaces/QueryPaginationRequest';
+import TrackingService from '@modules/tracking/services/TrackingService';
 
 @EntityRepository(Product)
 class ProductRepository extends Repository<Product> {
@@ -464,32 +465,87 @@ class ProductRepository extends Repository<Product> {
       .orderBy('product.discount', 'DESC')
       .skip((page - 1) * perPage)
       .take(perPage);
+    const trackingService = new TrackingService();
 
     const [products, total] = await queryBuilder.getManyAndCount();
     const totalPages = Math.ceil(total / perPage);
     const nextPage = page < totalPages;
-    const results = products.map((product: any) => {
-      product.price = product.price / 100;
-      const priceBRL = product.price.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-      });
+    const results = await Promise.all(
+      products.map(async (product: any) => {
+        product.price = product.price / 100;
+        const priceBRL = product.price.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        });
 
-      product.price = product.price * 100;
+        product.price = product.price * 100;
 
-      product.discount_percentage = product.discount;
-      product.post = `[${product.discount}%OFF🤯 ]Descubra ${product.title} com ${product.discount}% de Desconto! 🚀 
-  Aproveite a Oferta Imperdível no site da http://Achapromo.com.br
-  ${priceBRL}`;
+        product.discount_percentage = product.discount;
 
-      return product;
-    });
+        const { tracking_url } = await trackingService.generateTrackingUrl(
+          product.id,
+        );
+
+        product.post = this.generateRandomSocialMediaMessage(
+          product.title,
+          product.discount,
+          priceBRL,
+        );
+
+        return product;
+      }),
+    );
 
     return {
       products: results,
       total: totalPages,
       next_page: nextPage,
     };
+  }
+
+  private generateRandomSocialMediaMessage(
+    title: string,
+    discount: number,
+    priceBRL: string,
+  ): string {
+    const messages = [
+      `🔥 OFERTA IMPERDÍVEL! ${title} com ${discount}% OFF! 🤯
+
+💰 Por apenas ${priceBRL}
+
+
+#Gaming #Hardware #GamerBrasil #Setup`,
+
+      `⚡ ${discount}% DE DESCONTO! ${title} 🚀
+
+💸 ${priceBRL}
+
+#PC #Gamer #Hardware #TechDeals`,
+
+      `🎉 MEGA PROMOÇÃO! ${title} 🛍️
+
+🏷️ ${discount}% OFF - ${priceBRL}
+
+#PCGamer #Setup #Hardware #Gaming`,
+
+      `💥 ÚLTIMA CHANCE! ${title} com ${discount}% de desconto! ⏰
+
+💰 Apenas ${priceBRL}
+
+
+#GamerSetup #Hardware #PCMasterRace #Tech`,
+
+      `🛒 OFERTA RELÂMPAGO! ⚡
+
+📦 ${title}
+🏷️ ${discount}% OFF
+💵 ${priceBRL}
+
+#Gaming #Hardware #GamerDeals #TechBrasil`,
+    ];
+
+    const randomIndex = Math.floor(Math.random() * messages.length);
+    return messages[randomIndex];
   }
 }
 
