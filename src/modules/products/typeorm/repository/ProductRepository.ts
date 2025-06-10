@@ -482,10 +482,6 @@ class ProductRepository extends Repository<Product> {
 
         product.discount_percentage = product.discount;
 
-        const { tracking_url } = await trackingService.generateTrackingUrl(
-          product.id,
-        );
-
         product.post = this.generateRandomSocialMediaMessage(
           product.title,
           product.discount,
