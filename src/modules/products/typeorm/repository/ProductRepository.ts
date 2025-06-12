@@ -36,6 +36,8 @@ class ProductRepository extends Repository<Product> {
   public async findRecommends(
     page: number,
     perPage: number,
+    from?: number,
+    to?: number,
     orderBy = 'classification',
     orderDirection: 'ASC' | 'DESC' = 'DESC',
   ): Promise<iProductListResponse | undefined> {
@@ -48,7 +50,19 @@ class ProductRepository extends Repository<Product> {
         in_review: InReviewEnum.Option1,
         published: InReviewEnum.Option2,
         classification: Not(IsNull()),
-      })
+      });
+
+    // Filtro opcional de preço mínimo
+    if (from !== undefined && from > 0) {
+      queryBuilder.andWhere('product.price >= :minPrice', { minPrice: from });
+    }
+
+    // Filtro opcional de preço máximo
+    if (to !== undefined && to > 0) {
+      queryBuilder.andWhere('product.price <= :maxPrice', { maxPrice: to });
+    }
+
+    queryBuilder
       .orderBy(`product.${orderBy}`, orderDirection)
       .skip((page - 1) * perPage)
       .take(perPage);
@@ -94,6 +108,8 @@ class ProductRepository extends Repository<Product> {
   ): Promise<iProductListResponse | undefined> {
     const perPage = query.per_page || 10;
     const page = query.page || 1;
+    const from = query.from;
+    const to = query.to;
     const keyword = query.search || '';
     const orderBy = query.order_by || 'title';
     const orderDirection =
@@ -123,6 +139,16 @@ class ProductRepository extends Repository<Product> {
 
     if (searchCondition) {
       queryBuilder.andWhere(searchCondition, params);
+    }
+
+    // Filtro opcional de preço mínimo
+    if (from !== undefined && from > 0) {
+      queryBuilder.andWhere('product.price >= :minPrice', { minPrice: from });
+    }
+
+    // Filtro opcional de preço máximo
+    if (to !== undefined && to > 0) {
+      queryBuilder.andWhere('product.price <= :maxPrice', { maxPrice: to });
     }
 
     queryBuilder
@@ -169,6 +195,8 @@ class ProductRepository extends Repository<Product> {
   public async findTops(
     page: number,
     perPage: number,
+    from?: number,
+    to?: number,
     orderBy = 'discount',
     orderDirection: 'ASC' | 'DESC' = 'DESC',
   ): Promise<iProductListResponse | undefined> {
@@ -189,7 +217,19 @@ class ProductRepository extends Repository<Product> {
         published: InReviewEnum.Option2,
         discount: MoreThan(3),
         updated_at: MoreThanOrEqual(new Date(Date.now() - 24 * 60 * 60 * 1000)),
-      })
+      });
+
+    // Filtro opcional de preço mínimo
+    if (from !== undefined && from > 0) {
+      queryBuilder.andWhere('product.price >= :minPrice', { minPrice: from });
+    }
+
+    // Filtro opcional de preço máximo
+    if (to !== undefined && to > 0) {
+      queryBuilder.andWhere('product.price <= :maxPrice', { maxPrice: to });
+    }
+
+    queryBuilder
       .orderBy(`product.${orderField}`, direction)
       .addOrderBy('product.created_at', 'DESC')
       .skip((page - 1) * perPage)
@@ -234,6 +274,8 @@ class ProductRepository extends Repository<Product> {
   public async findNews(
     page: number,
     perPage: number,
+    from?: number,
+    to?: number,
     orderBy = 'created_at',
     orderDirection: 'ASC' | 'DESC' = 'DESC',
   ): Promise<iProductListResponse | undefined> {
@@ -249,7 +291,19 @@ class ProductRepository extends Repository<Product> {
         in_review: InReviewEnum.Option1,
         published: InReviewEnum.Option2,
         created_at: MoreThanOrEqual(twoDaysAgo),
-      })
+      });
+
+    // Filtro opcional de preço mínimo
+    if (from !== undefined && from > 0) {
+      queryBuilder.andWhere('product.price >= :minPrice', { minPrice: from });
+    }
+
+    // Filtro opcional de preço máximo
+    if (to !== undefined && to > 0) {
+      queryBuilder.andWhere('product.price <= :maxPrice', { maxPrice: to });
+    }
+
+    queryBuilder
       .orderBy(`product.${orderBy}`, orderDirection)
       .skip((page - 1) * perPage)
       .take(perPage);

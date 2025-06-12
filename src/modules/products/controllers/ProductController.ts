@@ -33,7 +33,8 @@ export default class ProductControlller {
     request: Request,
     response: Response,
   ): Promise<Response> {
-    const { page, per_page, order_by, order_direction } = request.query;
+    const { page, per_page, from, to, order_by, order_direction } =
+      request.query;
 
     const pageNumber = page ? parseInt(page as string, 10) : 1;
     const perPageNumber = per_page ? parseInt(per_page as string, 10) : 10;
@@ -47,6 +48,8 @@ export default class ProductControlller {
     const products = await productService.recommends(
       pageNumber,
       perPageNumber,
+      from ? parseInt(from as string, 10) : undefined,
+      to ? parseInt(to as string, 10) : undefined,
       orderBy,
       orderDirection,
     );
@@ -57,7 +60,8 @@ export default class ProductControlller {
     request: Request,
     response: Response,
   ): Promise<Response> {
-    const { page, per_page, order_by, order_direction } = request.query;
+    const { page, per_page, from, to, order_by, order_direction } =
+      request.query;
 
     // Converte os valores para números (caso sejam strings)
     const pageNumber = page ? parseInt(page as string, 10) : 1;
@@ -72,6 +76,8 @@ export default class ProductControlller {
     const results = await productService.topProducts(
       pageNumber,
       perPageNumber,
+      from ? parseInt(from as string, 10) : undefined,
+      to ? parseInt(to as string, 10) : undefined,
       orderBy,
       orderDirection,
     );
@@ -93,7 +99,8 @@ export default class ProductControlller {
     request: Request,
     response: Response,
   ): Promise<Response> {
-    const { page, per_page, order_by, order_direction } = request.query;
+    const { page, per_page, from, to, order_by, order_direction } =
+      request.query;
 
     const pageNumber = page ? parseInt(page as string, 10) : 1;
     const perPageNumber = per_page ? parseInt(per_page as string, 10) : 10;
@@ -107,6 +114,8 @@ export default class ProductControlller {
     const products = await productService.newsProducts(
       pageNumber,
       perPageNumber,
+      from ? parseInt(from as string, 10) : undefined,
+      to ? parseInt(to as string, 10) : undefined,
       orderBy,
       orderDirection,
     );
@@ -151,13 +160,14 @@ export default class ProductControlller {
     const product = await productService.productByUserLogged(request.user.id);
     return response.json(product);
   }
+
   public async searchProducts(
     request: Request,
     response: Response,
   ): Promise<Response> {
     const productService = new ListProductService();
 
-    const { page, per_page, order_by, order_direction, ...rest } =
+    const { page, per_page, from, to, order_by, order_direction, ...rest } =
       request.query;
     const query: Iquery & {
       order_by?: string;
@@ -165,6 +175,8 @@ export default class ProductControlller {
     } = {
       page: page ? parseInt(page as string, 10) : 1,
       per_page: per_page ? parseInt(per_page as string, 10) : 10,
+      from: from ? parseInt(from as string, 10) : undefined,
+      to: to ? parseInt(to as string, 10) : undefined,
       order_by: order_by ? String(order_by) : undefined,
       order_direction: order_direction
         ? (String(order_direction).toUpperCase() as 'ASC' | 'DESC')

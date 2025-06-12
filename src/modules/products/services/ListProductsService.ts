@@ -17,6 +17,8 @@ export default class ListProductService {
   public async recommends(
     page: number,
     per_page: number,
+    from?: number,
+    to?: number,
     orderBy = 'classification',
     orderDirection: 'ASC' | 'DESC' = 'DESC',
   ): Promise<iProductListResponse | undefined> {
@@ -24,6 +26,8 @@ export default class ListProductService {
     const _products = await productRepository.findRecommends(
       page,
       per_page,
+      from,
+      to,
       orderBy,
       orderDirection,
     );
@@ -62,13 +66,17 @@ export default class ListProductService {
   public async topProducts(
     page: number,
     perPage: number,
-    orderBy: string,
+    from?: number,
+    to?: number,
+    orderBy = 'classification',
     orderDirection: 'ASC' | 'DESC' = 'DESC',
   ) {
     const productRepository = getCustomRepository(ProductRepository);
     const top = await productRepository.findTops(
       page,
       perPage,
+      from,
+      to,
       orderBy,
       orderDirection,
     );
@@ -78,6 +86,8 @@ export default class ListProductService {
   public async newsProducts(
     page: number,
     perPage: number,
+    from?: number,
+    to?: number,
     orderBy = 'created_at',
     orderDirection: 'ASC' | 'DESC' = 'DESC',
   ) {
@@ -85,6 +95,8 @@ export default class ListProductService {
     const products = await productRepository.findNews(
       page,
       perPage,
+      from,
+      to,
       orderBy,
       orderDirection,
     );
